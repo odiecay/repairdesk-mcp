@@ -1,0 +1,36 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.eliterepairs/repairdesk-mcp",
+  "title": "RepairDesk MCP Server",
+  "description": "MCP server giving AI assistants access to the RepairDesk API — tickets, customers, invoices, inventory, employees, and shop reference data.",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/REPLACE-ME/repairdesk-mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://github.com/REPLACE-ME/repairdesk-mcp#readme",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "mcp-server-repairdesk",
+      "version": "1.0.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "REPAIRDESK_API_KEY",
+          "description": "Your RepairDesk API key (Settings > API in your RepairDesk admin)",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "REPAIRDESK_BASE_URL",
+          "description": "Override the RepairDesk API base URL (defaults to https://api.repairdesk.co/api/web/v1)",
+          "isRequired": false
+        }
+      ]
+    }
+  ]
+}

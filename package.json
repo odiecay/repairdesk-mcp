@@ -1,0 +1,28 @@
+{
+  "name": "mcp-server-repairdesk",
+  "version": "1.0.0",
+  "description": "MCP server giving AI assistants access to the RepairDesk API — tickets, customers, invoices, inventory, employees, and shop reference data.",
+  "main": "server.mjs",
+  "type": "module",
+  "bin": {
+    "mcp-server-repairdesk": "server.mjs"
+  },
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "repairdesk",
+    "claude",
+    "repair-shop"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.22.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}
