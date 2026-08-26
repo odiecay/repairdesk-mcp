@@ -36,7 +36,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const CONFIG_PATH = process.env.REPAIRDESK_CONFIG || join(__dirname, "config.json");
 
 const TIMEOUT_MS = 15000;
-const USER_AGENT = "RepairDesk-MCP/1.0"; // MUST be set — RepairDesk's Cloudflare blocks default Python/Node UAs
+// MUST be non-empty — RepairDesk's Cloudflare blocks default Python/Node UAs.
+// Override with your own store/tool name via REPAIRDESK_USER_AGENT if you like.
+const USER_AGENT = process.env.REPAIRDESK_USER_AGENT || "RepairDesk-MCP/1.0";
 
 // Hot-reload: re-read config on every API call so the key can be rotated
 // without restarting the server. readFileSync on a tiny JSON file is ~0.1ms.

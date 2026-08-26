@@ -9,6 +9,38 @@ invoice 8821"*, or *"assign the iPhone screen job to Dave"*.
 Not an official RepairDesk product — an independent tool built by a RepairDesk shop for
 RepairDesk shops.
 
+## What you can actually do with this
+
+Once it's wired into your AI harness, you can just talk to your RepairDesk data instead of
+clicking through the web UI. Some real examples:
+
+**Front counter / triage**
+- *"Look up ticket T-15423"* — full ticket detail: customer, device, per-device status, notes.
+- *"What's the status on Sarah Miller's phone?"* — searches tickets by customer name/keyword.
+- *"Show me everything that's Pending or Waiting for Parts"* — filter tickets by status.
+- *"What's assigned to Dave right now?"* — filter tickets by technician.
+- *"Pull up John's contact details"* — customer lookup by name, phone, or email.
+
+**Workflow / bench work**
+- *"Add a diagnostic note to T-15423: replaced screen, battery tested OK"*
+- *"Assign ticket T-15490 to Dave"*
+- *"Mark T-15423 as Repaired"* — the server will ask you to confirm first, and flags that this
+  status auto-fires a customer SMS/email in RepairDesk.
+- *"Create a ticket for this customer: iPhone 13, screen replacement"* — again, confirmation
+  required before it actually creates anything.
+
+**Money / admin**
+- *"Which invoices are still unpaid from last month?"*
+- *"What's the outstanding balance on invoice 8821?"*
+- *"Do we have an iPhone 13 battery in stock?"* — inventory search.
+- *"List all our technicians"* / *"What payment methods do we have set up?"*
+- *"What repair categories/device types do we have configured?"* — useful context when
+  building a ticket or diagnosing what a device model even is in your system.
+
+Because this runs through an actual AI assistant rather than a fixed dashboard, you can chain
+these naturally — "find any overdue invoices for customers with a ticket still open" — and the
+assistant works it out across tools instead of you cross-referencing two screens by hand.
+
 ## Tools
 
 | Tool | What it does |
@@ -24,6 +56,10 @@ RepairDesk shops.
 **Safety rail:** `repairdesk_tickets_write` requires `confirmed: true` before applying a status
 change, and warns when the target status is one RepairDesk auto-notifies the customer on
 (Repaired, Ready for Pickup, Completed, Waiting on Customer, Waiting For Quote, Cancelled).
+
+**Handy detail:** ticket lookups/writes accept either RepairDesk's order ID format (`T-15423`)
+or the internal numeric ticket ID — you never need to know which one you have, the server
+resolves it for you.
 
 ## What this is *not*
 
@@ -73,18 +109,41 @@ claude mcp add repairdesk \
 }
 ```
 
-See `.env.example` for all supported environment variables (base URL override, rate-limit
-interval, audit log location).
+See `.env.example` for all supported environment variables — most clients (Claude Code, Claude
+Desktop) read these from the `env` block above, not from an actual `.env` file.
+
+| Variable | Required | Default | Purpose |
+|---|---|---|---|
+| `REPAIRDESK_API_KEY` | Yes | — | Your RepairDesk API key |
+| `REPAIRDESK_BASE_URL` | No | `https://api.repairdesk.co/api/web/v1` | Override the API base URL |
+| `REPAIRDESK_USER_AGENT` | No | `RepairDesk-MCP/1.0` | User-Agent sent on every request — set this to your own shop/tool name if you like; it just can't be empty (see Notes) |
+| `REPAIRDESK_MIN_INTERVAL_MS` | No | `500` | Minimum ms between outbound API calls |
+| `REPAIRDESK_LOG_DIR` | No | `./logs` | Where `mcp_audit.log` is written |
+| `REPAIRDESK_CONFIG` | No | `./config.json` | Path to a JSON config file, if you'd rather use one than env vars (see below) |
+
+**Alternative: config file instead of env vars.** If your setup makes env vars awkward, create a
+`config.json` (gitignored) next to `server.mjs`:
+
+```json
+{
+  "repairdesk_api_key": "your_key_here",
+  "repairdesk_base_url": "https://api.repairdesk.co/api/web/v1"
+}
+```
+
+It's re-read on every API call, so you can rotate the key without restarting the server.
+Environment variables take priority over this file when both are present.
 
 ## Notes
 
+- **User-Agent:** RepairDesk's Cloudflare blocks requests with default Node/Python User-Agent
+  strings, so this server always sends a custom one. It ships with a generic default but you're
+  free to set your own via `REPAIRDESK_USER_AGENT` — just don't unset it entirely.
 - **Rate limiting:** RepairDesk caps API keys at roughly 100–120 requests/minute. This server
   serialises all outbound calls with a minimum gap between them (default 500ms,
   `REPAIRDESK_MIN_INTERVAL_MS`) so bulk lookups don't trip your own key's limit.
 - **Audit log:** every tool call is appended to `logs/mcp_audit.log` (API key stripped) for
   traceability. Point it elsewhere with `REPAIRDESK_LOG_DIR`.
-- **T-XXXXX IDs:** ticket lookups/writes accept either RepairDesk's order ID format (`T-15423`)
-  or the internal numeric ticket ID — the server resolves one from the other automatically.
 - **Per-device status:** in RepairDesk, ticket status and assigned technician live on each
   *device* within a ticket, not the ticket itself. This server handles that correctly (reads all
   devices before writing so it doesn't clobber other devices' state); a naive raw API call
