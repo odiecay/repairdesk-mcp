@@ -1,10 +1,11 @@
 # RepairDesk MCP Server
 
 An [MCP](https://modelcontextprotocol.io) (Model Context Protocol) server that gives any
-MCP-compatible AI assistant — Claude Code, Claude Desktop, Cursor, Windsurf, or any other MCP
-client — direct, read/write access to your [RepairDesk](https://www.repairdesk.co/) shop data.
-Point it at your store's API key and start asking things like *"look up ticket T-15423"*,
-*"what's overdue on invoice 8821"*, or *"assign the iPhone screen job to Dave"*.
+MCP-compatible AI assistant — Claude Code, Claude Desktop, Codex CLI, OpenCode, Cursor,
+Windsurf, or any other MCP client — direct, read/write access to your
+[RepairDesk](https://www.repairdesk.co/) shop data. Point it at your store's API key and start
+asking things like *"look up ticket T-15423"*, *"what's overdue on invoice 8821"*, or *"assign
+the iPhone screen job to Dave"*.
 
 Not an official RepairDesk product — an independent tool built by a RepairDesk shop for
 RepairDesk shops. No warranty, use at your own risk (see [License](#license)) — but it's in
@@ -16,6 +17,7 @@ daily use running a real repair shop's ticket queue, not a proof of concept.
 - [Tools reference](#tools-reference)
 - [What this is not](#what-this-is-not)
 - [Quick start](#quick-start)
+- [Manual setup](#manual-setup)
 - [All configuration options](#all-configuration-options)
 - [Troubleshooting](#troubleshooting)
 - [FAQ](#faq)
@@ -108,26 +110,36 @@ cd repairdesk-mcp
 **If you don't:** click the green **Code** button on the GitHub repo page → **Download ZIP** →
 unzip it somewhere → open a terminal in that folder.
 
-### 3. Install dependencies
+### 3. Get your RepairDesk API key
 
-In the folder from step 2:
+In your RepairDesk admin: **Settings → API**. Copy the key shown there — the setup script asks
+for it in the next step. Treat it like a password: it grants full read/write access to your
+shop's data (see [Security](#security)).
+
+### 4. Run the setup script
 
 ```bash
-npm install
+node setup.mjs
 ```
 
-This downloads the two small libraries the server needs. You'll see a new `node_modules` folder
-appear — that's normal, leave it alone.
+This is the fastest path and handles everything: it runs `npm install` for you if needed, asks
+for your API key, asks which AI assistant you're using (Claude Code, Claude Desktop, Codex CLI,
+or OpenCode), and writes the config for you automatically — backing up any existing config file
+first. If you're on something else, it prints the config block to paste in yourself.
 
-### 4. Get your RepairDesk API key
+If you'd rather do it by hand — or your client isn't one of the four above — see
+[Manual setup](#manual-setup) below instead. Either way, run `npm install` yourself first if you
+skip the script.
 
-In your RepairDesk admin: **Settings → API**. Copy the key shown there — you'll paste it into
-your AI assistant's config in the next step. Treat it like a password: it grants full read/write
-access to your shop's data (see [Security](#security)).
+### 5. Try it
 
-### 5. Add it to your AI assistant
+Ask your assistant something like *"Using RepairDesk, list my 5 most recent tickets"*. If it
+comes back with real ticket data, you're done.
 
-Pick whichever you use:
+## Manual setup
+
+Skip this if `node setup.mjs` already worked for you. Otherwise, run `npm install` in this
+folder first, then wire up your client by hand:
 
 <details>
 <summary><strong>Claude Code</strong></summary>
@@ -173,27 +185,72 @@ Save the file, then **fully quit and reopen** Claude Desktop (not just close the
 </details>
 
 <details>
+<summary><strong>Codex CLI (OpenAI)</strong></summary>
+
+Edit (or create) `~/.codex/config.toml` and add:
+
+```toml
+[mcp_servers.repairdesk]
+command = "node"
+args = ["/full/path/to/repairdesk-mcp/server.mjs"]
+
+[mcp_servers.repairdesk.env]
+REPAIRDESK_API_KEY = "your_key_here"
+REPAIRDESK_USER_AGENT = "YourShopName-MCP/1.0"
+```
+
+Start a new Codex session and run `/mcp` to confirm it connected. (Codex also has an interactive
+`codex mcp add` command if you prefer that over editing the file — check `codex mcp add --help`
+for the exact flags on your installed version.)
+</details>
+
+<details>
+<summary><strong>OpenCode</strong></summary>
+
+Open (or create) the config file for your OS:
+
+- **Mac/Linux:** `~/.config/opencode/opencode.json`
+- **Windows:** `%APPDATA%\opencode\opencode.json`
+
+Add this (merge it with anything already in `mcp` if the file isn't empty):
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "repairdesk": {
+      "type": "local",
+      "command": ["node", "/full/path/to/repairdesk-mcp/server.mjs"],
+      "enabled": true,
+      "environment": {
+        "REPAIRDESK_API_KEY": "your_key_here",
+        "REPAIRDESK_USER_AGENT": "YourShopName-MCP/1.0"
+      }
+    }
+  }
+}
+```
+
+Restart OpenCode to pick it up.
+</details>
+
+<details>
 <summary><strong>Any other MCP client (Cursor, Windsurf, etc.)</strong></summary>
 
-The config shape above is the de facto standard — most MCP clients use the same
-`command`/`args`/`env` structure, just in a different settings file. Check your client's docs
-for where that file lives; the `mcpServers` block itself should work as-is.
+The `command`/`args`/`env` shape used above (Claude Code/Desktop) is the de facto standard —
+most MCP clients follow it, just in a different settings file. Check your client's docs for
+where that file lives; the block itself should work as-is.
 </details>
 
 Use the **full, absolute path** to `server.mjs` (e.g. `/Users/you/repairdesk-mcp/server.mjs` or
 `C:\Users\you\repairdesk-mcp\server.mjs`) — a relative path will fail because your AI client
 doesn't run from inside this folder.
 
-### 6. Try it
-
-Ask your assistant something like *"Using RepairDesk, list my 5 most recent tickets"*. If it
-comes back with real ticket data, you're done.
-
 ## All configuration options
 
-Everything below goes in the `env` block from step 5 above — not a `.env` file (most MCP clients
-don't read one automatically). `.env.example` in this repo lists the same variables for
-reference.
+Everything below goes in the `env`/`environment` block your client's config uses (`setup.mjs`
+handles this for you) — not a `.env` file, since most MCP clients don't read one automatically.
+`.env.example` in this repo lists the same variables for reference.
 
 | Variable | Required | Default | Purpose |
 |---|---|---|---|
@@ -262,6 +319,11 @@ wrong. Check you can reach that host from wherever this server is running.
 - Run `node /full/path/to/server.mjs` directly in a terminal — if it errors, you'll see the
   actual problem instead of a generic "tool not available" from your client.
 
+**`node setup.mjs` says it couldn't find `claude`/`codex` on your PATH**
+That's fine — it falls back to printing the config block for you to paste in by hand (see
+[Manual setup](#manual-setup)). This just means that CLI isn't installed or isn't on your PATH;
+it doesn't mean the MCP server itself is broken.
+
 **Still stuck?** Open an issue on this repo with the error message (redact your API key first if
 it appears anywhere in the output).
 
@@ -277,8 +339,9 @@ additional fee from this project. (Your AI assistant subscription, e.g. Claude, 
 unrelated to this server.)
 
 **Can I use this with something other than Claude?**
-Yes — MCP is an open standard. Anything that speaks MCP over stdio (Cursor, Windsurf, other
-Claude-compatible or MCP-compatible clients) can use this server the same way.
+Yes — MCP is an open standard. `setup.mjs` configures Claude Code, Claude Desktop, Codex CLI, and
+OpenCode directly; anything else that speaks MCP over stdio (Cursor, Windsurf, etc.) can use this
+server too, via the manual config in [Manual setup](#manual-setup).
 
 **Can I run this for multiple RepairDesk stores?**
 Yes — register it multiple times under different names (e.g. `repairdesk-store1`,
