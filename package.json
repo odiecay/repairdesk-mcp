@@ -13,12 +13,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "REPLACE-ME-git-clone-url"
+    "url": "git+https://github.com/codeyoc/repairdesk-mcp.git"
   },
   "bugs": {
-    "url": "REPLACE-ME-issues-url"
+    "url": "https://github.com/codeyoc/repairdesk-mcp/issues"
   },
-  "homepage": "REPLACE-ME-repo-url#readme",
+  "homepage": "https://github.com/codeyoc/repairdesk-mcp#readme",
   "keywords": [
     "mcp",
     "model-context-protocol",

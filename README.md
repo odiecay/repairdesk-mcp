@@ -103,7 +103,7 @@ You should see something like `v20.x.x` (anything 18 or higher is fine).
 
 **If you have Git:**
 ```bash
-git clone <this-repo-url>
+git clone https://github.com/codeyoc/repairdesk-mcp.git
 cd repairdesk-mcp
 ```
 
