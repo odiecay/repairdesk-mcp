@@ -10,6 +10,14 @@
   "scripts": {
     "start": "node server.mjs"
   },
+  "repository": {
+    "type": "git",
+    "url": "REPLACE-ME-git-clone-url"
+  },
+  "bugs": {
+    "url": "REPLACE-ME-issues-url"
+  },
+  "homepage": "REPLACE-ME-repo-url#readme",
   "keywords": [
     "mcp",
     "model-context-protocol",

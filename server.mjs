@@ -87,12 +87,16 @@ const NOTIFICATION_STATUSES = [
 ];
 
 // ============================================================
-// Rate limiter — RepairDesk caps at ~100-120 req/min per API key.
-// Serialises all outbound calls with a minimum gap between them so a
-// single store's bulk pagination never trips its own key's limit.
+// Rate limiter — RepairDesk documents a 100 req/min cap per API key (some
+// plans allow up to 120). Default interval targets the conservative 100/min
+// figure; raise REPAIRDESK_MIN_INTERVAL_MS if you still see 429s, or lower it
+// if your plan comfortably allows more.
+//
+// Serialises all outbound calls with a minimum gap between them so a single
+// store's bulk pagination never trips its own key's limit.
 // ============================================================
 
-const MIN_INTERVAL_MS = Number(process.env.REPAIRDESK_MIN_INTERVAL_MS || 500);
+const MIN_INTERVAL_MS = Number(process.env.REPAIRDESK_MIN_INTERVAL_MS || 600);
 let chain = Promise.resolve();
 let lastCallAt = 0;
 
@@ -109,81 +113,72 @@ function throttled(fn) {
 }
 
 // ============================================================
-// API Client — GET / POST / PUT
+// API Client — one request function shared by GET / POST / PUT.
+// Retries once on a 429 (rate limited) after waiting the interval RepairDesk
+// asks for (Retry-After header if present, else a flat backoff).
 // ============================================================
 
-async function apiGet(endpoint, params = {}) {
-  return throttled(async () => {
-    const { key, base } = getConfig();
-    const url = new URL(`${base}${endpoint}`);
-    url.searchParams.set("api_key", key);
+async function request(method, endpoint, { params, body } = {}) {
+  return throttled(() => requestOnce(method, endpoint, { params, body, isRetry: false }));
+}
+
+async function requestOnce(method, endpoint, { params, body, isRetry }) {
+  const { key, base } = getConfig();
+  const url = new URL(`${base}${endpoint}`);
+  url.searchParams.set("api_key", key);
+  if (params) {
     for (const [k, v] of Object.entries(params)) {
       if (v !== undefined && v !== "") url.searchParams.set(k, String(v));
     }
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
-    try {
-      const res = await fetch(url.toString(), {
-        signal: ctrl.signal,
-        headers: { Accept: "application/json", "User-Agent": USER_AGENT }
-      });
-      if (!res.ok) throw new Error(`API ${res.status}: ${(await res.text()).slice(0, 200)}`);
-      const json = await res.json();
-      if (json.success === false) throw new Error(`API error: ${json.message || "unknown"}`);
-      return json.data ?? json;
-    } finally {
-      clearTimeout(timer);
+  }
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  let res;
+  try {
+    res = await fetch(url.toString(), {
+      method,
+      signal: ctrl.signal,
+      headers: {
+        Accept: "application/json",
+        "User-Agent": USER_AGENT,
+        ...(body ? { "Content-Type": "application/json" } : {}),
+      },
+      ...(body ? { body: JSON.stringify(body) } : {}),
+    });
+  } catch (e) {
+    if (e.name === "AbortError") {
+      throw new Error(`RepairDesk API request timed out after ${TIMEOUT_MS}ms (${method} ${endpoint}) — check your network connection or REPAIRDESK_BASE_URL.`);
     }
-  });
+    throw e;
+  } finally {
+    clearTimeout(timer);
+  }
+
+  if (res.status === 429) {
+    if (isRetry) {
+      throw new Error(`RepairDesk API rate limit hit twice in a row (429) on ${method} ${endpoint}. Raise REPAIRDESK_MIN_INTERVAL_MS (currently ${MIN_INTERVAL_MS}ms) and try again.`);
+    }
+    const retryAfterHeader = Number(res.headers.get("retry-after"));
+    const backoffMs = Number.isFinite(retryAfterHeader) && retryAfterHeader > 0
+      ? retryAfterHeader * 1000
+      : Math.max(MIN_INTERVAL_MS * 4, 2000);
+    await new Promise(r => setTimeout(r, backoffMs));
+    return requestOnce(method, endpoint, { params, body, isRetry: true });
+  }
+  if (res.status === 401) {
+    throw new Error("RepairDesk API returned 401 Unauthorized — check REPAIRDESK_API_KEY is correct and active (Settings > API in your RepairDesk admin).");
+  }
+  if (!res.ok) {
+    throw new Error(`RepairDesk API ${method} ${endpoint} failed: ${res.status} ${(await res.text()).slice(0, 300)}`);
+  }
+  const json = await res.json();
+  if (json.success === false) throw new Error(`RepairDesk API error on ${method} ${endpoint}: ${json.message || "unknown"}`);
+  return json.data ?? json;
 }
 
-async function apiPost(endpoint, body) {
-  return throttled(async () => {
-    const { key, base } = getConfig();
-    const url = new URL(`${base}${endpoint}`);
-    url.searchParams.set("api_key", key);
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
-    try {
-      const res = await fetch(url.toString(), {
-        method: "POST",
-        signal: ctrl.signal,
-        headers: { Accept: "application/json", "Content-Type": "application/json", "User-Agent": USER_AGENT },
-        body: JSON.stringify(body)
-      });
-      if (!res.ok) throw new Error(`API POST ${res.status}: ${(await res.text()).slice(0, 300)}`);
-      const json = await res.json();
-      if (json.success === false) throw new Error(`API error: ${json.message || "unknown"}`);
-      return json.data ?? json;
-    } finally {
-      clearTimeout(timer);
-    }
-  });
-}
-
-async function apiPut(endpoint, body) {
-  return throttled(async () => {
-    const { key, base } = getConfig();
-    const url = new URL(`${base}${endpoint}`);
-    url.searchParams.set("api_key", key);
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
-    try {
-      const res = await fetch(url.toString(), {
-        method: "PUT",
-        signal: ctrl.signal,
-        headers: { Accept: "application/json", "Content-Type": "application/json", "User-Agent": USER_AGENT },
-        body: JSON.stringify(body)
-      });
-      if (!res.ok) throw new Error(`API PUT ${res.status}: ${(await res.text()).slice(0, 300)}`);
-      const json = await res.json();
-      if (json.success === false) throw new Error(`API error: ${json.message || "unknown"}`);
-      return json.data ?? json;
-    } finally {
-      clearTimeout(timer);
-    }
-  });
-}
+const apiGet = (endpoint, params) => request("GET", endpoint, { params });
+const apiPost = (endpoint, body) => request("POST", endpoint, { body });
+const apiPut = (endpoint, body) => request("PUT", endpoint, { body });
 
 // ============================================================
 // Helper

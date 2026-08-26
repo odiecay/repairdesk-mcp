@@ -1,17 +1,29 @@
 # RepairDesk MCP Server
 
 An [MCP](https://modelcontextprotocol.io) (Model Context Protocol) server that gives any
-MCP-compatible AI assistant — Claude Code, Claude Desktop, or any other MCP client — direct,
-read/write access to your [RepairDesk](https://www.repairdesk.co/) shop data. Point it at your
-store's API key and start asking things like *"look up ticket T-15423"*, *"what's overdue on
-invoice 8821"*, or *"assign the iPhone screen job to Dave"*.
+MCP-compatible AI assistant — Claude Code, Claude Desktop, Cursor, Windsurf, or any other MCP
+client — direct, read/write access to your [RepairDesk](https://www.repairdesk.co/) shop data.
+Point it at your store's API key and start asking things like *"look up ticket T-15423"*,
+*"what's overdue on invoice 8821"*, or *"assign the iPhone screen job to Dave"*.
 
 Not an official RepairDesk product — an independent tool built by a RepairDesk shop for
-RepairDesk shops.
+RepairDesk shops. No warranty, use at your own risk (see [License](#license)) — but it's in
+daily use running a real repair shop's ticket queue, not a proof of concept.
+
+## Contents
+
+- [What you can actually do with this](#what-you-can-actually-do-with-this)
+- [Tools reference](#tools-reference)
+- [What this is not](#what-this-is-not)
+- [Quick start](#quick-start)
+- [All configuration options](#all-configuration-options)
+- [Troubleshooting](#troubleshooting)
+- [FAQ](#faq)
+- [Security](#security)
 
 ## What you can actually do with this
 
-Once it's wired into your AI harness, you can just talk to your RepairDesk data instead of
+Once it's wired into your AI assistant, you can just talk to your RepairDesk data instead of
 clicking through the web UI. Some real examples:
 
 **Front counter / triage**
@@ -38,10 +50,10 @@ clicking through the web UI. Some real examples:
   building a ticket or diagnosing what a device model even is in your system.
 
 Because this runs through an actual AI assistant rather than a fixed dashboard, you can chain
-these naturally — "find any overdue invoices for customers with a ticket still open" — and the
+these naturally — *"find any overdue invoices for customers with a ticket still open"* — and the
 assistant works it out across tools instead of you cross-referencing two screens by hand.
 
-## Tools
+## Tools reference
 
 | Tool | What it does |
 |---|---|
@@ -55,7 +67,9 @@ assistant works it out across tools instead of you cross-referencing two screens
 
 **Safety rail:** `repairdesk_tickets_write` requires `confirmed: true` before applying a status
 change, and warns when the target status is one RepairDesk auto-notifies the customer on
-(Repaired, Ready for Pickup, Completed, Waiting on Customer, Waiting For Quote, Cancelled).
+(Repaired, Ready for Pickup, Completed, Waiting on Customer, Waiting For Quote, Cancelled). You
+don't need to do anything for this to work — just answer "yes" when your assistant relays the
+confirmation prompt.
 
 **Handy detail:** ticket lookups/writes accept either RepairDesk's order ID format (`T-15423`)
 or the internal numeric ticket ID — you never need to know which one you have, the server
@@ -67,57 +81,126 @@ This covers the read side of RepairDesk plus core ticket workflow writes. It doe
 estimates, appointment creation, POS/sales transactions, inventory writes, payment recording,
 ticket image/attachment upload, or webhooks. PRs welcome if you need one of those.
 
-## Requirements
+## Quick start
 
-- Node.js 18+
-- A RepairDesk account with API access (**Settings → API** in your RepairDesk admin, to get your key)
+You don't need to be a developer to run this — just comfortable typing a handful of commands
+into a terminal. Total time: about 5 minutes.
 
-## Install
+### 1. Install Node.js (if you don't have it)
 
+Download and install from [nodejs.org](https://nodejs.org/) — get the "LTS" version. This
+installs both `node` and `npm`. To check it worked, open a terminal and run:
+
+```bash
+node --version
+```
+
+You should see something like `v20.x.x` (anything 18 or higher is fine).
+
+### 2. Get the code
+
+**If you have Git:**
 ```bash
 git clone <this-repo-url>
 cd repairdesk-mcp
+```
+
+**If you don't:** click the green **Code** button on the GitHub repo page → **Download ZIP** →
+unzip it somewhere → open a terminal in that folder.
+
+### 3. Install dependencies
+
+In the folder from step 2:
+
+```bash
 npm install
 ```
 
-## Configure
+This downloads the two small libraries the server needs. You'll see a new `node_modules` folder
+appear — that's normal, leave it alone.
 
-The server reads its RepairDesk API key from an environment variable — set this in your MCP
-client's config, not in a file you might commit.
+### 4. Get your RepairDesk API key
 
-**Claude Code:**
+In your RepairDesk admin: **Settings → API**. Copy the key shown there — you'll paste it into
+your AI assistant's config in the next step. Treat it like a password: it grants full read/write
+access to your shop's data (see [Security](#security)).
+
+### 5. Add it to your AI assistant
+
+Pick whichever you use:
+
+<details>
+<summary><strong>Claude Code</strong></summary>
+
+Run this from anywhere, replacing the path with the full path to where you unzipped/cloned the
+folder, and the key with your real one:
 
 ```bash
 claude mcp add repairdesk \
   --env REPAIRDESK_API_KEY=your_key_here \
-  -- node /path/to/repairdesk-mcp/server.mjs
+  --env REPAIRDESK_USER_AGENT=YourShopName-MCP/1.0 \
+  -- node /full/path/to/repairdesk-mcp/server.mjs
 ```
+</details>
 
-**Claude Desktop** (`claude_desktop_config.json`) or any other MCP client's config:
+<details>
+<summary><strong>Claude Desktop</strong></summary>
+
+Open (or create) the config file for your OS:
+
+- **Mac:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+- **Linux:** `~/.config/Claude/claude_desktop_config.json`
+
+Add this (merge it with anything already in `mcpServers` if the file isn't empty):
 
 ```json
 {
   "mcpServers": {
     "repairdesk": {
       "command": "node",
-      "args": ["/path/to/repairdesk-mcp/server.mjs"],
+      "args": ["/full/path/to/repairdesk-mcp/server.mjs"],
       "env": {
-        "REPAIRDESK_API_KEY": "your_key_here"
+        "REPAIRDESK_API_KEY": "your_key_here",
+        "REPAIRDESK_USER_AGENT": "YourShopName-MCP/1.0"
       }
     }
   }
 }
 ```
 
-See `.env.example` for all supported environment variables — most clients (Claude Code, Claude
-Desktop) read these from the `env` block above, not from an actual `.env` file.
+Save the file, then **fully quit and reopen** Claude Desktop (not just close the window).
+</details>
+
+<details>
+<summary><strong>Any other MCP client (Cursor, Windsurf, etc.)</strong></summary>
+
+The config shape above is the de facto standard — most MCP clients use the same
+`command`/`args`/`env` structure, just in a different settings file. Check your client's docs
+for where that file lives; the `mcpServers` block itself should work as-is.
+</details>
+
+Use the **full, absolute path** to `server.mjs` (e.g. `/Users/you/repairdesk-mcp/server.mjs` or
+`C:\Users\you\repairdesk-mcp\server.mjs`) — a relative path will fail because your AI client
+doesn't run from inside this folder.
+
+### 6. Try it
+
+Ask your assistant something like *"Using RepairDesk, list my 5 most recent tickets"*. If it
+comes back with real ticket data, you're done.
+
+## All configuration options
+
+Everything below goes in the `env` block from step 5 above — not a `.env` file (most MCP clients
+don't read one automatically). `.env.example` in this repo lists the same variables for
+reference.
 
 | Variable | Required | Default | Purpose |
 |---|---|---|---|
 | `REPAIRDESK_API_KEY` | Yes | — | Your RepairDesk API key |
 | `REPAIRDESK_BASE_URL` | No | `https://api.repairdesk.co/api/web/v1` | Override the API base URL |
-| `REPAIRDESK_USER_AGENT` | No | `RepairDesk-MCP/1.0` | User-Agent sent on every request — set this to your own shop/tool name if you like; it just can't be empty (see Notes) |
-| `REPAIRDESK_MIN_INTERVAL_MS` | No | `500` | Minimum ms between outbound API calls |
+| `REPAIRDESK_USER_AGENT` | No | `RepairDesk-MCP/1.0` | User-Agent sent on every request. Set this to your own shop/tool name if you like — it just can't be empty (see [Troubleshooting](#troubleshooting)) |
+| `REPAIRDESK_MIN_INTERVAL_MS` | No | `600` | Minimum ms between outbound API calls — see rate limiting below |
 | `REPAIRDESK_LOG_DIR` | No | `./logs` | Where `mcp_audit.log` is written |
 | `REPAIRDESK_CONFIG` | No | `./config.json` | Path to a JSON config file, if you'd rather use one than env vars (see below) |
 
@@ -134,28 +217,87 @@ Desktop) read these from the `env` block above, not from an actual `.env` file.
 It's re-read on every API call, so you can rotate the key without restarting the server.
 Environment variables take priority over this file when both are present.
 
-## Notes
+### Rate limiting — the 100/minute thing
 
-- **User-Agent:** RepairDesk's Cloudflare blocks requests with default Node/Python User-Agent
-  strings, so this server always sends a custom one. It ships with a generic default but you're
-  free to set your own via `REPAIRDESK_USER_AGENT` — just don't unset it entirely.
-- **Rate limiting:** RepairDesk caps API keys at roughly 100–120 requests/minute. This server
-  serialises all outbound calls with a minimum gap between them (default 500ms,
-  `REPAIRDESK_MIN_INTERVAL_MS`) so bulk lookups don't trip your own key's limit.
-- **Audit log:** every tool call is appended to `logs/mcp_audit.log` (API key stripped) for
-  traceability. Point it elsewhere with `REPAIRDESK_LOG_DIR`.
-- **Per-device status:** in RepairDesk, ticket status and assigned technician live on each
-  *device* within a ticket, not the ticket itself. This server handles that correctly (reads all
-  devices before writing so it doesn't clobber other devices' state); a naive raw API call
-  often doesn't.
+RepairDesk's documented cap is **100 requests per minute per API key** (some plans allow up to
+120 — check your own plan if you're unsure). This server handles that for you automatically:
+
+- Every outbound call is queued through a single throttle that waits at least
+  `REPAIRDESK_MIN_INTERVAL_MS` (default 600ms ≈ 100/min) between requests — so asking for a big
+  batch of tickets won't itself trigger a rate-limit error.
+- If RepairDesk still returns a 429 (rate limited) — e.g. another tool is also hammering the same
+  key — the server automatically waits and retries once before giving up.
+- You don't need to configure anything for this to work. Only touch
+  `REPAIRDESK_MIN_INTERVAL_MS` if you're consistently seeing rate-limit errors (raise it) or you
+  know your plan allows a higher cap and want faster bulk lookups (lower it, carefully).
+
+## Troubleshooting
+
+**"RepairDesk API returned 401 Unauthorized" / "Unauthorized" in the response**
+Your API key is wrong, was revoked, or wasn't picked up. Double-check the key in **Settings →
+API** in RepairDesk, and that it's spelled correctly in your MCP client's config (not a stray
+space, not still `YOUR_REPAIRDESK_API_KEY_HERE`). Fully restart your AI client after any config
+change — most don't reload MCP config live.
+
+**Requests fail immediately / look like they're being blocked, not authenticated**
+RepairDesk's Cloudflare blocks requests with an empty or default-looking User-Agent. Don't set
+`REPAIRDESK_USER_AGENT` to an empty string.
+
+**"RepairDesk API rate limit hit twice in a row (429)"**
+You're making requests faster than your key's limit even after the built-in retry. Raise
+`REPAIRDESK_MIN_INTERVAL_MS` (try `1000`) in your config.
+
+**"Ticket T-XXXXX not found — could not resolve to internal ID"**
+Check the order ID is correct and exists in this RepairDesk store. If you have the internal
+numeric ID instead, that works too — pass it directly.
+
+**"RepairDesk API request timed out after 15000ms"**
+Usually a network/firewall issue reaching `api.repairdesk.co`, or `REPAIRDESK_BASE_URL` is
+wrong. Check you can reach that host from wherever this server is running.
+
+**Your AI assistant doesn't see the tool at all**
+- Confirm the path in `args` is absolute, not relative, and actually points at `server.mjs`.
+- Confirm you ran `npm install` in that folder (missing `node_modules` = the server can't start).
+- Fully quit and restart your AI client — don't just close the chat window.
+- Run `node /full/path/to/server.mjs` directly in a terminal — if it errors, you'll see the
+  actual problem instead of a generic "tool not available" from your client.
+
+**Still stuck?** Open an issue on this repo with the error message (redact your API key first if
+it appears anywhere in the output).
+
+## FAQ
+
+**Is this an official RepairDesk tool?**
+No. It's independently built and maintained, using RepairDesk's public API. Use it at your own
+discretion.
+
+**Does this cost anything to run?**
+No — it's just making the same API calls your RepairDesk plan already allows. There's no
+additional fee from this project. (Your AI assistant subscription, e.g. Claude, is separate and
+unrelated to this server.)
+
+**Can I use this with something other than Claude?**
+Yes — MCP is an open standard. Anything that speaks MCP over stdio (Cursor, Windsurf, other
+Claude-compatible or MCP-compatible clients) can use this server the same way.
+
+**Can I run this for multiple RepairDesk stores?**
+Yes — register it multiple times under different names (e.g. `repairdesk-store1`,
+`repairdesk-store2`) in your MCP client, each with its own `REPAIRDESK_API_KEY`.
+
+**Will my AI assistant accidentally email/text my customers?**
+Only `repairdesk_tickets_write` can trigger that, and only via a status change — which always
+requires an explicit `confirmed: true` and is flagged in the tool description when the target
+status is one of RepairDesk's notifying statuses. It won't happen silently.
 
 ## Security
 
 Your `REPAIRDESK_API_KEY` grants full read/write access to your shop's customer and financial
 data. Keep it in your MCP client's env config, never in a committed file. `config.json` and
 `.env` are gitignored here for exactly that reason — use them locally if you prefer a file over
-env vars, but don't commit a filled-in copy.
+env vars, but don't commit a filled-in copy. Found a security issue? Please open an issue (or a
+private report if your host supports it) rather than a public PR with exploit details.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE). Provided as-is, no warranty — you're responsible for how you use
+it against your own RepairDesk account.
