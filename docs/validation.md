@@ -61,7 +61,7 @@ or payroll totals have not been reconciled against the web application.
 
 ## Not live-tested
 
-Brand/model creation, appointment creation, inventory
+Brand/model creation, inventory
 creation/update, trade-in creation/update/conversion, invoice creation, ticket
 conversion to invoice, and payment recording need dedicated test records and
 planned cleanup. They are not all operations on a ticket; a test ticket alone
@@ -78,8 +78,8 @@ cannot isolate their effects. No claim of complete live coverage is made.
    for status changes? None is documented in the checked specification.
 4. Can condition-photo writes report failure after saving, and is there an
    idempotency mechanism or authoritative result lookup for uncertain uploads?
-5. Should an empty inventory-transfer result be `success:false`, or an empty
-   successful collection? What is the supported discovery route for billable
+5. Should empty inventory-transfer and appointment-search results be
+   `success:false`, or empty successful collections? What is the supported discovery route for billable
    category IDs?
 
 Live evidence and credentials are deliberately excluded from this repository.
@@ -138,3 +138,24 @@ Earlier attempts established these live edge cases:
 
 No SMS was sent to the fictional number. Private contact details and live
 customer IDs are excluded from this public report.
+
+## Appointment creation
+
+The operator selected a date/time and confirmed a 15-minute, zero-price test
+appointment using their existing customer details and an existing device.
+`POST /appointment/timeslots` returned the requested slot. `POST
+/appointment/create` returned a new lead ID, display number, the existing
+customer ID and an HTML confirmation containing the correct name/device/time.
+
+Independent `GET /appointment` readback verified one new record, the original
+customer ID, device, unique test serial, start/end times and zero total. Customer
+detail readback confirmed the checked contact/address/consent fields unchanged.
+The operator confirmed the appointment's identity, description, time and zero
+price in the website. Confirmation email/SMS delivery has not been established;
+the HTML response alone is not evidence of delivery.
+
+An empty keyword search returned `success:false` / `No Result Found` before
+creation. The test accounted for this explicit empty-result response; the MCP
+still reports the upstream rejection rather than silently translating all API
+errors to empty collections. No failed or uncertain appointment write was
+retried.
