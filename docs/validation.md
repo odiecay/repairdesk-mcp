@@ -119,7 +119,8 @@ reserved fictional Australian mobile number. Independent detail readback
 verified its ID, name, mobile, email, complete address and SMS opt-in. Customer
 list readback also verified SMS opt-in enabled and email opt-in disabled on the
 new record, and preserved both consent settings on the original record.
-Operator confirmation of the website display remains pending.
+The operator confirmed both records display the correct contact details in the
+website, including the new record's address and SMS opt-in.
 
 Earlier attempts established these live edge cases:
 
