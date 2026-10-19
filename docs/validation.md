@@ -61,7 +61,7 @@ or payroll totals have not been reconciled against the web application.
 
 ## Not live-tested
 
-Customer creation/update, brand/model creation, appointment creation, inventory
+Brand/model creation, appointment creation, inventory
 creation/update, trade-in creation/update/conversion, invoice creation, ticket
 conversion to invoice, and payment recording need dedicated test records and
 planned cleanup. They are not all operations on a ticket; a test ticket alone
@@ -106,3 +106,34 @@ email with correct fields. No uncertain email send was retried.
 Direct-message edge cases were also exercised live: preview returned rendered
 text without sending; an unknown placeholder and an unrelated repair-line ID
 were rejected. Independent ticket readback showed no new communications.
+
+## Customer creation and update
+
+The operator explicitly supplied their own details and authorized a second
+customer record. A partial `PUT /customers/{customer-Id}` changed the existing
+record's email and preserved their real mobile. Independent detail readback
+verified both and unchanged name, address and SMS consent fields.
+
+`POST /customers` then created the second record using the released email and a
+reserved fictional Australian mobile number. Independent detail readback
+verified its ID, name, mobile, email, complete address and SMS opt-in. Customer
+list readback also verified SMS opt-in enabled and email opt-in disabled on the
+new record, and preserved both consent settings on the original record.
+Operator confirmation of the website display remains pending.
+
+Earlier attempts established these live edge cases:
+
+- The new creation route rejected an email already held by the original record.
+- Both `POST /customers` and legacy `POST /customer` rejected its existing mobile,
+  including when a different, unused email was supplied. Legacy creation has
+  only been tested for rejection; its successful creation path is unverified.
+- Independent readback after these rejections found no new matching customer
+  and no changes to the existing record's checked fields.
+- Searching a local-format mobile returned no match even though the stored
+  international-format number was present. A no-match keyword search alone
+  therefore does not establish that a contact is unique. The server's duplicate
+  checks remain authoritative; these observations do not establish every
+  normalization or uniqueness rule.
+
+No SMS was sent to the fictional number. Private contact details and live
+customer IDs are excluded from this public report.
