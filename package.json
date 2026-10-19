@@ -1,7 +1,7 @@
 {
   "name": "mcp-server-repairdesk",
-  "version": "1.0.0",
-  "description": "MCP server giving AI assistants access to the RepairDesk API — tickets, customers, invoices, inventory, employees, and shop reference data.",
+  "version": "2.0.0",
+  "description": "MCP server giving AI assistants access to the RepairDesk API \u2014 tickets, customers, invoices, inventory, employees, and shop reference data.",
   "main": "server.mjs",
   "type": "module",
   "bin": {
@@ -9,16 +9,17 @@
   },
   "scripts": {
     "start": "node server.mjs",
-    "setup": "node setup.mjs"
+    "setup": "node setup.mjs",
+    "test": "node --test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/codeyoc/repairdesk-mcp.git"
+    "url": "git+https://github.com/odiecay/repairdesk-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/codeyoc/repairdesk-mcp/issues"
+    "url": "https://github.com/odiecay/repairdesk-mcp/issues"
   },
-  "homepage": "https://github.com/codeyoc/repairdesk-mcp#readme",
+  "homepage": "https://github.com/odiecay/repairdesk-mcp#readme",
   "keywords": [
     "mcp",
     "model-context-protocol",
@@ -33,5 +34,14 @@
   "engines": {
     "node": ">=18"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "files": [
+    "server.mjs",
+    "setup.mjs",
+    "lib/",
+    "README.md",
+    "LICENSE",
+    "docs/",
+    ".env.example"
+  ]
 }

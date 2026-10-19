@@ -1,33 +1,16 @@
 # Contributing
 
-Issues and PRs welcome — this is a small, focused tool and easy to extend.
+The server uses `lib/client.mjs` for API authentication, pacing, bounded timeouts
+and response handling. Existing convenience tools live in `server.mjs`.
+New documented operations are registered in `lib/operations.mjs`; their request
+schemas are pinned in `lib/api-spec.json` and converted by `lib/schema.mjs`.
 
-## Adding a new tool / endpoint
+When refreshing the public specification, review changes before updating the
+snapshot. Do not silently change monetary operations or customer notifications.
+Keep endpoint mappings explicit and update `docs/endpoints.md` and tests.
+Never add credentials, live tickets, customer data or audit logs to this repo.
 
-Each tool is a self-contained `server.tool(...)` block in `server.mjs`. To add one:
-
-1. Add it near the similar existing tools (e.g. a new read-only lookup goes near
-   `repairdesk_shop_info`).
-2. Reuse `apiGet` / `apiPost` / `apiPut` — they already handle auth, rate limiting, retries, and
-   error messages.
-3. If it's a write action with real-world consequences (notifies a customer, charges a payment,
-   etc.), follow the `confirmed: true` pattern used in `repairdesk_tickets_write` rather than
-   letting it fire immediately.
-4. Update the tools table in `README.md`.
-
-## Testing changes
-
-There's no test suite yet (contributions welcome here too). Before opening a PR:
-
-```bash
-node --check server.mjs   # catches syntax errors
-```
-
-Then manually verify against a real RepairDesk sandbox/test account — set `REPAIRDESK_API_KEY`
-and run a few tool calls through your MCP client. Never test against a production shop's data
-for a change you're not sure about.
-
-## Reporting bugs
-
-Include the error message and which tool/action triggered it. Redact your API key if it appears
-anywhere in logs or output before pasting.
+Run `npm ci`, `npm test`, `node --check server.mjs`, and `npm pack --dry-run`.
+Tests must not make live API calls. Use an authorized test ticket or sandbox for
+integration checks. Preserve the no-automatic-retry rule for writes and verify
+state before reporting success on field updates.

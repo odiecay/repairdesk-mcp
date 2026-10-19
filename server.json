@@ -1,14 +1,14 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.codeyoc/repairdesk-mcp",
+  "name": "io.github.odiecay/repairdesk-mcp",
   "title": "RepairDesk MCP Server",
-  "description": "MCP server giving AI assistants access to the RepairDesk API — tickets, customers, invoices, inventory, employees, and shop reference data.",
+  "description": "MCP server giving AI assistants access to the RepairDesk API \u2014 tickets, customers, invoices, inventory, employees, and shop reference data.",
   "version": "1.0.0",
   "repository": {
-    "url": "https://github.com/codeyoc/repairdesk-mcp",
+    "url": "https://github.com/odiecay/repairdesk-mcp",
     "source": "github"
   },
-  "websiteUrl": "https://github.com/codeyoc/repairdesk-mcp#readme",
+  "websiteUrl": "https://github.com/odiecay/repairdesk-mcp#readme",
   "packages": [
     {
       "registryType": "npm",

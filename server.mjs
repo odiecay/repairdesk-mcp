@@ -22,7 +22,10 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { readFileSync, appendFileSync, mkdirSync } from "fs";
-import { dirname, join } from "path";
+import { dirname, join, delimiter } from "path";
+import { createClient, loadConfig } from "./lib/client.mjs";
+import { updateTicket } from "./lib/ticket-write.mjs";
+import { registerOperations } from "./lib/operations.mjs";
 import { fileURLToPath } from "url";
 
 // ============================================================
@@ -35,34 +38,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // a file over env vars. Never commit a filled-in config.json.
 const CONFIG_PATH = process.env.REPAIRDESK_CONFIG || join(__dirname, "config.json");
 
-const TIMEOUT_MS = 15000;
-// MUST be non-empty — RepairDesk's Cloudflare blocks default Python/Node UAs.
-// Override with your own store/tool name via REPAIRDESK_USER_AGENT if you like.
-const USER_AGENT = process.env.REPAIRDESK_USER_AGENT || "RepairDesk-MCP/1.0";
-
-// Hot-reload: re-read config on every API call so the key can be rotated
-// without restarting the server. readFileSync on a tiny JSON file is ~0.1ms.
-function getConfig() {
-  const envKey = process.env.REPAIRDESK_API_KEY;
-  if (envKey && envKey !== "YOUR_REPAIRDESK_API_KEY_HERE") {
-    return {
-      key: envKey,
-      base: process.env.REPAIRDESK_BASE_URL || "https://api.repairdesk.co/api/web/v1",
-    };
-  }
-  let config;
-  try {
-    config = JSON.parse(readFileSync(CONFIG_PATH, "utf8"));
-  } catch (e) {
-    throw new Error(`RepairDesk not configured — no REPAIRDESK_API_KEY env and cannot read ${CONFIG_PATH}: ${e.message}`);
-  }
-  const key = config.repairdesk_api_key;
-  if (!key || key === "YOUR_REPAIRDESK_API_KEY_HERE") {
-    throw new Error("No RepairDesk key — set REPAIRDESK_API_KEY env or repairdesk_api_key in config.json.");
-  }
-  const base = config.repairdesk_base_url || "https://api.repairdesk.co/api/web/v1";
-  return { key, base };
-}
+const getConfig = () => loadConfig(CONFIG_PATH);
 
 // ============================================================
 // Audit Log — every MCP call logged to a local file (API key stripped)
@@ -80,101 +56,13 @@ function auditLog(tool, action, params) {
   try { appendFileSync(AUDIT_LOG, line); } catch {}
 }
 
-// Statuses that trigger automatic customer SMS/email notifications
-const NOTIFICATION_STATUSES = [
-  "Repaired", "Ready for Pickup", "Completed",
-  "Waiting on Customer", "Waiting For Quote", "Cancelled"
-];
+// Notification rules are store-configured; any status change may notify.
 
-// ============================================================
-// Rate limiter — RepairDesk documents a 100 req/min cap per API key (some
-// plans allow up to 120). Default interval targets the conservative 100/min
-// figure; raise REPAIRDESK_MIN_INTERVAL_MS if you still see 429s, or lower it
-// if your plan comfortably allows more.
-//
-// Serialises all outbound calls with a minimum gap between them so a single
-// store's bulk pagination never trips its own key's limit.
-// ============================================================
-
-const MIN_INTERVAL_MS = Number(process.env.REPAIRDESK_MIN_INTERVAL_MS || 600);
-let chain = Promise.resolve();
-let lastCallAt = 0;
-
-function throttled(fn) {
-  const run = chain.then(async () => {
-    const wait = lastCallAt + MIN_INTERVAL_MS - Date.now();
-    if (wait > 0) await new Promise(r => setTimeout(r, wait));
-    lastCallAt = Date.now();
-    return fn();
-  });
-  // Keep the chain alive even if this call rejects, so later calls still run.
-  chain = run.catch(() => {});
-  return run;
-}
-
-// ============================================================
-// API Client — one request function shared by GET / POST / PUT.
-// Retries once on a 429 (rate limited) after waiting the interval RepairDesk
-// asks for (Retry-After header if present, else a flat backoff).
-// ============================================================
-
-async function request(method, endpoint, { params, body } = {}) {
-  return throttled(() => requestOnce(method, endpoint, { params, body, isRetry: false }));
-}
-
-async function requestOnce(method, endpoint, { params, body, isRetry }) {
-  const { key, base } = getConfig();
-  const url = new URL(`${base}${endpoint}`);
-  url.searchParams.set("api_key", key);
-  if (params) {
-    for (const [k, v] of Object.entries(params)) {
-      if (v !== undefined && v !== "") url.searchParams.set(k, String(v));
-    }
-  }
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
-  let res;
-  try {
-    res = await fetch(url.toString(), {
-      method,
-      signal: ctrl.signal,
-      headers: {
-        Accept: "application/json",
-        "User-Agent": USER_AGENT,
-        ...(body ? { "Content-Type": "application/json" } : {}),
-      },
-      ...(body ? { body: JSON.stringify(body) } : {}),
-    });
-  } catch (e) {
-    if (e.name === "AbortError") {
-      throw new Error(`RepairDesk API request timed out after ${TIMEOUT_MS}ms (${method} ${endpoint}) — check your network connection or REPAIRDESK_BASE_URL.`);
-    }
-    throw e;
-  } finally {
-    clearTimeout(timer);
-  }
-
-  if (res.status === 429) {
-    if (isRetry) {
-      throw new Error(`RepairDesk API rate limit hit twice in a row (429) on ${method} ${endpoint}. Raise REPAIRDESK_MIN_INTERVAL_MS (currently ${MIN_INTERVAL_MS}ms) and try again.`);
-    }
-    const retryAfterHeader = Number(res.headers.get("retry-after"));
-    const backoffMs = Number.isFinite(retryAfterHeader) && retryAfterHeader > 0
-      ? retryAfterHeader * 1000
-      : Math.max(MIN_INTERVAL_MS * 4, 2000);
-    await new Promise(r => setTimeout(r, backoffMs));
-    return requestOnce(method, endpoint, { params, body, isRetry: true });
-  }
-  if (res.status === 401) {
-    throw new Error("RepairDesk API returned 401 Unauthorized — check REPAIRDESK_API_KEY is correct and active (Settings > API in your RepairDesk admin).");
-  }
-  if (!res.ok) {
-    throw new Error(`RepairDesk API ${method} ${endpoint} failed: ${res.status} ${(await res.text()).slice(0, 300)}`);
-  }
-  const json = await res.json();
-  if (json.success === false) throw new Error(`RepairDesk API error on ${method} ${endpoint}: ${json.message || "unknown"}`);
-  return json.data ?? json;
-}
+const request = createClient({ getConfig,
+  interval: Number(process.env.REPAIRDESK_MIN_INTERVAL_MS || 1250),
+  timeout: Number(process.env.REPAIRDESK_TIMEOUT_MS || 60000),
+  userAgent: process.env.REPAIRDESK_USER_AGENT || "RepairDesk-MCP/2.0"
+});
 
 const apiGet = (endpoint, params) => request("GET", endpoint, { params });
 const apiPost = (endpoint, body) => request("POST", endpoint, { body });
@@ -215,7 +103,7 @@ async function resolveTicketId(ticketId) {
 
 const server = new McpServer({
   name: "repairdesk",
-  version: "1.0.0",
+  version: "2.0.0",
   description: "RepairDesk API — tickets, customers, invoices, inventory, employees"
 });
 
@@ -264,10 +152,11 @@ server.tool(
 
 server.tool(
   "repairdesk_tickets_write",
-  `Create/update tickets, add notes, assign techs. WARNING: Status changes may trigger automatic customer SMS/email! Statuses that notify: ${NOTIFICATION_STATUSES.join(", ")}. ALWAYS confirm with user before status changes.`,
+  "Create/update tickets, add notes, assign techs. Status changes may trigger store-configured customer SMS/email, including In Progress. Set confirmed=true only for user-authorized changes; prior explicit authorization is sufficient.",
   {
     action: z.enum(["create", "update", "add_note", "assign"]),
     ticket_id: z.string().optional().describe("Ticket ID (for update/add_note/assign)"),
+    ticket_line_id: z.string().optional().describe("Ticket line ID; required when a ticket has multiple devices/services"),
     customer_id: z.string().optional().describe("Customer ID (for create)"),
     device_id: z.string().optional().describe("Device type ID (for create)"),
     service_id: z.string().optional().describe("Service/repair item ID"),
@@ -278,7 +167,8 @@ server.tool(
     additional_notes: z.string().optional().describe("Internal notes"),
     status: z.string().optional().describe("Ticket status — MAY TRIGGER NOTIFICATION"),
     note: z.string().optional().describe("Note text (for add_note)"),
-    note_type: z.string().optional().default("internal").describe("internal or diagnostic"),
+    note_type: z.enum(["internal", "diagnostic"]).optional().default("internal"),
+    is_flag: z.union([z.literal(0),z.literal(1)]).optional().default(0).describe("Flag the new note; defaults to 0. Does not edit an existing note."),
     technician_id: z.string().optional().describe("Employee ID (for assign)"),
     confirmed: z.boolean().optional().default(false).describe("Must be true for status changes"),
   },
@@ -298,39 +188,13 @@ server.tool(
         id: parseInt(params.ticket_id, 10),
         note: params.note,
         type: typeNum,
-        is_flag: 0
+        is_flag: params.is_flag
       });
       return txt(`Note added to ticket ${params.ticket_id}:\n"${params.note.slice(0, 200)}..."\n\n${JSON.stringify(result, null, 2)}`);
     }
 
-    if (action === "assign") {
-      if (!params.ticket_id || !params.technician_id) throw new Error("ticket_id and technician_id required");
-      const result = await apiPut(`/tickets/${params.ticket_id}`, { assigned_to: params.technician_id });
-      return txt(`Ticket ${params.ticket_id} assigned to tech ${params.technician_id}\n${JSON.stringify(result, null, 2)}`);
-    }
-
-    if (action === "update") {
-      if (!params.ticket_id) throw new Error("ticket_id required");
-      if (params.status && !confirmed) {
-        let warn = `CONFIRMATION REQUIRED — Update ticket ${params.ticket_id} status to: ${params.status}`;
-        if (NOTIFICATION_STATUSES.some(s => params.status.toLowerCase().includes(s.toLowerCase())))
-          warn += "\nWARNING: This may auto-notify the customer!";
-        warn += "\nCall again with confirmed=true to proceed.";
-        return txt(warn);
-      }
-      const body = {};
-      if (params.device_name) body.device = params.device_name;
-      if (params.serial_number) body.serial = params.serial_number;
-      if (params.technician_id) body.assigned_to = params.technician_id;
-      // Status lives per-device, not per-ticket. API silently ignores ticket-level status.
-      if (params.status) {
-        const ticket = await apiGet(`/tickets/${params.ticket_id}`);
-        const devices = ticket?.devices || ticket?.data?.devices || [];
-        if (devices.length === 0) throw new Error("No devices on ticket — cannot set status");
-        body.devices = devices.map(d => ({ id: d.id, status: params.status }));
-      }
-      const result = await apiPut(`/tickets/${params.ticket_id}`, body);
-      return txt(`Ticket ${params.ticket_id} updated\n${JSON.stringify(result, null, 2)}`);
+    if (action === "assign" || action === "update") {
+      return txt(JSON.stringify(await updateTicket(params, {get:apiGet,post:apiPost,put:apiPut}), null, 2));
     }
 
     if (action === "create") {
@@ -340,13 +204,13 @@ server.tool(
         return txt(`CONFIRMATION REQUIRED — Create ticket:\n- Customer: ${params.customer_id}\n- Device: ${params.device_id}\n- Service: ${params.service_name || params.service_id || "N/A"}\nCall again with confirmed=true`);
       }
       const device = { device: params.device_id };
-      if (params.service_id) device.repair_id = params.service_id;
+      if (params.service_id) device.repairProdItems = [{id:params.service_id, ...(params.service_name ? {name:params.service_name} : {})}];
       if (params.service_name) device.name = params.service_name;
       if (params.serial_number) device.serial = params.serial_number;
       if (params.security_code) device.security_code = params.security_code;
       if (params.additional_notes) device.additional_notes = params.additional_notes;
-      if (params.technician_id) device.assigned_to = params.technician_id;
-      const result = await apiPost("/tickets", { customer_id: params.customer_id, devices: [device] });
+      if (params.technician_id) device.assigned_to = Number(params.technician_id);
+      const result = await apiPost("/tickets", { summary: {customer_id: params.customer_id}, devices: [device] });
       return txt(`Ticket created!\n${JSON.stringify(result, null, 2)}`);
     }
   }
@@ -532,7 +396,11 @@ server.tool(
 // ============================================================
 
 async function main() {
-  const transport = new StdioServerTransport();
+  registerOperations(server, { request, auditLog,
+  uploadRoots: (process.env.REPAIRDESK_UPLOAD_ROOTS || '').split(delimiter).filter(Boolean)
+});
+
+const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("RepairDesk MCP Server v1.0.0 running");
 }

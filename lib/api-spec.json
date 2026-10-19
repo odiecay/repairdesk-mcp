@@ -1,0 +1,4029 @@
+{
+  "source": "https://api-docs.repairdesk.co/rd-unresolved-swagger.json",
+  "checked": "2026-10-19",
+  "components": {
+    "Problem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "1630375"
+        },
+        "name": {
+          "type": "string",
+          "example": "Screen Replacement"
+        }
+      }
+    },
+    "CreateLead": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "string",
+              "example": "John"
+            },
+            "lastName": {
+              "type": "string",
+              "example": "Doe"
+            },
+            "email": {
+              "type": "string",
+              "example": "john@example.com"
+            },
+            "mobile": {
+              "type": "string",
+              "example": "+11211432123"
+            },
+            "zipCode": {
+              "type": "string",
+              "example": "56000"
+            },
+            "address": {
+              "type": "string",
+              "example": "Washington DC"
+            },
+            "referredBy": {
+              "type": "string",
+              "example": "Facebook"
+            }
+          }
+        },
+        "devices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "repairType": {
+                "type": "string",
+                "example": "1"
+              },
+              "imei": {
+                "type": "string",
+                "example": "123454321234563"
+              },
+              "serial": {
+                "type": "string",
+                "example": "131231a"
+              },
+              "device": {
+                "type": "string",
+                "example": "12305"
+              },
+              "category_id": {
+                "type": "string",
+                "description": "Repair category ID to bind to the lead device line.",
+                "example": "30194"
+              },
+              "price": {
+                "type": "string",
+                "example": "272.72"
+              },
+              "serviceType": {
+                "type": "string",
+                "example": "3"
+              },
+              "tax": {
+                "type": "string",
+                "example": "0.00"
+              },
+              "repairProdItems": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              },
+              "additionalProblem": {
+                "type": "string",
+                "example": "Testing"
+              },
+              "customerNotes": {
+                "type": "string",
+                "example": "Sample customer notes"
+              },
+              "securityCode": {
+                "type": "string",
+                "example": "1234"
+              },
+              "startTime": {
+                "type": "string",
+                "example": "2023/09/25 09:00"
+              },
+              "endTime": {
+                "type": "string",
+                "example": "2023/09/25 10:00"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Item": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Charging Adapter"
+        },
+        "item_type": {
+          "type": "string",
+          "example": "Accessories"
+        },
+        "manufacturer": {
+          "type": "integer",
+          "example": "11231"
+        },
+        "device": {
+          "type": "string",
+          "example": "44221"
+        },
+        "in_stock": {
+          "type": "integer",
+          "example": 10
+        },
+        "cost_price": {
+          "type": "integer",
+          "example": 100.0
+        },
+        "price": {
+          "type": "integer",
+          "example": 120.0
+        },
+        "tax_class": {
+          "type": "integer",
+          "example": 11221
+        },
+        "tax_inclusive": {
+          "type": "integer",
+          "example": 0
+        },
+        "sku": {
+          "type": "string",
+          "example": "231124551321245"
+        },
+        "supplier": {
+          "type": "integer",
+          "example": 11144
+        },
+        "upc_code": {
+          "type": "string",
+          "example": "123123aaA114"
+        },
+        "valuation_method": {
+          "type": "integer",
+          "example": 1
+        },
+        "is_serialize": {
+          "type": "integer",
+          "example": 0
+        },
+        "reorder_level": {
+          "type": "string",
+          "example": "5"
+        },
+        "stock_warning": {
+          "type": "string",
+          "example": "10"
+        },
+        "minimum_price": {
+          "type": "string",
+          "example": "100"
+        },
+        "description": {
+          "type": "string",
+          "description": "Short description (app_inventory.description)."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Long description or rich text (app_inventory.notes); same as product Long Description in RepairDesk."
+        },
+        "condition": {
+          "type": "string",
+          "description": "Optional. Product condition. Must match an id or name from GET /inventory/additionalinfo (e.g. \"New\", \"Used\").",
+          "example": "New"
+        },
+        "physical_location": {
+          "type": "string",
+          "description": "Optional. Physical location / bin. Must match a name from GET /inventory/additionalinfo. Alias device_location is also accepted.",
+          "example": "Bin 1"
+        }
+      }
+    },
+    "Device": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "example": true
+        },
+        "statusCode": {
+          "type": "integer",
+          "example": 200
+        },
+        "message": {
+          "type": "string",
+          "example": "OK"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "604307"
+              },
+              "name": {
+                "type": "string",
+                "example": "Iphone 15"
+              },
+              "manufacturer_id": {
+                "type": "string",
+                "example": "1003"
+              },
+              "company": {
+                "type": "string",
+                "example": "Apple"
+              },
+              "sort": {
+                "type": "string",
+                "example": "0"
+              },
+              "image": {
+                "type": "string",
+                "example": "https://example.com/images/productTheme/devices/small/good_apple.jpg"
+              },
+              "colors": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "example": "Gold"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "A message describing the error"
+        }
+      }
+    },
+    "SmsInboxItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "SMS record ID",
+          "example": 123
+        },
+        "date_time": {
+          "type": "string",
+          "description": "When the message was sent or received",
+          "example": "2025-03-13 10:30:00"
+        },
+        "from": {
+          "type": "string",
+          "description": "Sender phone number",
+          "example": "+1234567890"
+        },
+        "to": {
+          "type": "string",
+          "description": "Recipient phone number",
+          "example": "+0987654321"
+        },
+        "message": {
+          "type": "string",
+          "description": "Message body",
+          "example": "Hi, your repair is ready for pickup."
+        },
+        "status": {
+          "type": "string",
+          "description": "Message status",
+          "enum": [
+            "delivered",
+            "sent",
+            "queued",
+            "failed"
+          ],
+          "example": "delivered"
+        },
+        "direction": {
+          "type": "string",
+          "description": "Message direction",
+          "enum": [
+            "inbound",
+            "outbound"
+          ],
+          "example": "outbound"
+        },
+        "error": {
+          "type": "string",
+          "nullable": true,
+          "description": "Error message if send failed; otherwise null",
+          "example": null
+        },
+        "module": {
+          "type": "string",
+          "nullable": true,
+          "description": "Linked record type: Ticket, Invoice, Customer, Leads, Campaign, Estimates, or null",
+          "enum": [
+            "Ticket",
+            "Invoice",
+            "Customer",
+            "Leads",
+            "Campaign",
+            "Estimates",
+            null
+          ],
+          "example": "Ticket"
+        },
+        "module_id": {
+          "type": "integer",
+          "nullable": true,
+          "description": "ID of the linked record (e.g. ticket ID when module is Ticket), or null",
+          "example": 456
+        }
+      }
+    },
+    "Error401": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "example": false
+        },
+        "statusCode": {
+          "type": "integer",
+          "example": 401
+        },
+        "message": {
+          "type": "string",
+          "example": "Unauthorized"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "example": "Unauthorized"
+            },
+            "message": {
+              "type": "string",
+              "example": "Your request was made with invalid credentials."
+            },
+            "code": {
+              "type": "integer",
+              "example": 0
+            },
+            "status": {
+              "type": "integer",
+              "example": 401
+            }
+          }
+        }
+      }
+    },
+    "PbxCallLogsQuery": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1,
+          "description": "Page number (1-based)."
+        },
+        "per_page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20,
+          "description": "Page size (max 100)."
+        },
+        "pagesize": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Alias for per_page."
+        },
+        "from_date": {
+          "type": "string",
+          "format": "date",
+          "example": "2026-01-01",
+          "description": "Filter results from the start of this date (YYYY-MM-DD)."
+        },
+        "to_date": {
+          "type": "string",
+          "format": "date",
+          "example": "2026-01-31",
+          "description": "Filter results up to the end of this date (YYYY-MM-DD)."
+        },
+        "phone_number": {
+          "type": "string",
+          "description": "Partial phone number search. Matches against caller and called numbers."
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "inbound",
+            "in",
+            "outbound",
+            "out",
+            "voicemail"
+          ],
+          "description": "Filter by call direction. Case-insensitive."
+        },
+        "has_recording": {
+          "type": "string",
+          "enum": [
+            "1",
+            "true",
+            "yes"
+          ],
+          "description": "When set, only returns calls that have a recording."
+        },
+        "call_type": {
+          "type": "string",
+          "example": "Missed",
+          "description": "Filter by call type (exact match)."
+        }
+      }
+    },
+    "PbxCallLogsResponse": {
+      "type": "object",
+      "required": [
+        "items",
+        "total",
+        "page",
+        "per_page"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "description": "Call log records for the current page.",
+          "items": {
+            "$ref": "#/components/schemas/PbxCallLogItem"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "description": "Total matching records across all pages.",
+          "example": 150
+        },
+        "page": {
+          "type": "integer",
+          "description": "Current page number (echoed from request).",
+          "example": 1
+        },
+        "per_page": {
+          "type": "integer",
+          "description": "Page size used (after cap, max 100).",
+          "example": 20
+        }
+      }
+    },
+    "PbxCallLogItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Unique call log ID.",
+          "example": 12345
+        },
+        "created_on": {
+          "type": "string",
+          "nullable": true,
+          "description": "Date and time the call was recorded (YYYY-MM-DD HH:MM:SS) in the store's local time zone.",
+          "example": "2026-01-16 18:00:47"
+        },
+        "from": {
+          "type": "string",
+          "nullable": true,
+          "description": "Caller number, formatted per store country.",
+          "example": "+1 780-904-8222"
+        },
+        "to": {
+          "type": "string",
+          "nullable": true,
+          "description": "Called number, formatted.",
+          "example": "+1 555-0100"
+        },
+        "direction": {
+          "type": "string",
+          "nullable": true,
+          "description": "Call direction. E.g. Inbound, Outbound, Voicemail.",
+          "example": "Outbound"
+        },
+        "store_id": {
+          "type": "integer",
+          "nullable": true,
+          "description": "Store ID.",
+          "example": 10
+        },
+        "customer": {
+          "$ref": "#/components/schemas/PbxCallLogCustomer"
+        },
+        "start_time": {
+          "type": "string",
+          "nullable": true,
+          "description": "Call start time (YYYY-MM-DD HH:MM:SS) in the store's local time zone.",
+          "example": "2026-01-16 17:57:13"
+        },
+        "end_time": {
+          "type": "string",
+          "nullable": true,
+          "description": "Call end time (YYYY-MM-DD HH:MM:SS) in the store's local time zone.",
+          "example": "2026-01-16 18:00:47"
+        },
+        "callDuration": {
+          "type": "string",
+          "nullable": true,
+          "description": "Call duration (e.g. 03:34).",
+          "example": "03:34"
+        },
+        "callType": {
+          "type": "string",
+          "nullable": true,
+          "description": "Call type, e.g. Outbound, Missed, Inbound.",
+          "example": "Outbound"
+        },
+        "recording_url": {
+          "type": "string",
+          "nullable": true,
+          "description": "URL to the call recording. Null if no recording is available.",
+          "example": "https://example.3cx.us/recording/sample"
+        },
+        "agent_id": {
+          "type": "string",
+          "nullable": true,
+          "description": "Agent extension or ID.",
+          "example": "3163"
+        },
+        "agent_name": {
+          "type": "string",
+          "nullable": true,
+          "description": "Agent display name.",
+          "example": "Sales Team"
+        },
+        "contact_number": {
+          "type": "string",
+          "nullable": true,
+          "description": "Contact phone number.",
+          "example": "+1 780-904-8222"
+        },
+        "sentiment": {
+          "type": "integer",
+          "nullable": true,
+          "description": "Sentiment score for the call.",
+          "example": 5
+        },
+        "summary": {
+          "type": "string",
+          "nullable": true,
+          "description": "AI-generated call summary.",
+          "example": "Customer called to inquire about repair status."
+        },
+        "transcription": {
+          "type": "string",
+          "nullable": true,
+          "description": "Call transcription.",
+          "example": "Hello, I was calling about my repair..."
+        }
+      }
+    },
+    "PbxCallLogCustomer": {
+      "type": "object",
+      "required": [
+        "customer_id",
+        "first_name",
+        "last_name",
+        "phone",
+        "mobile",
+        "email"
+      ],
+      "description": "Customer linked to the call. Always present on every item. If no customer is matched, first_name is 'Unknown Caller' and all other fields are null.",
+      "properties": {
+        "customer_id": {
+          "type": "integer",
+          "nullable": true,
+          "description": "The linked customer's ID. Null if no customer is matched.",
+          "example": 99
+        },
+        "first_name": {
+          "type": "string",
+          "nullable": true,
+          "description": "Customer first name. Returns 'Unknown Caller' when no customer is matched.",
+          "example": "Karen"
+        },
+        "last_name": {
+          "type": "string",
+          "nullable": true,
+          "description": "Customer last name.",
+          "example": "Smith"
+        },
+        "phone": {
+          "type": "string",
+          "nullable": true,
+          "description": "Customer phone number.",
+          "example": null
+        },
+        "mobile": {
+          "type": "string",
+          "nullable": true,
+          "description": "Customer mobile number.",
+          "example": "+17809048222"
+        },
+        "email": {
+          "type": "string",
+          "nullable": true,
+          "description": "Customer email address.",
+          "example": "karen@example.com"
+        }
+      }
+    },
+    "TransactionLogItem": {
+      "type": "object",
+      "description": "A single payment, refund, trade-in, cash-drawer, shift, or expense row. Shift rows include extra opening/closing fields.",
+      "properties": {
+        "date": {
+          "type": "integer",
+          "description": "Unix timestamp of the payment (or shift/expense) event. This is the payment_date used for cash-basis grouping \u2014 not the invoice created date.",
+          "example": 1786615067
+        },
+        "transaction_datetime": {
+          "type": "string",
+          "description": "Same instant as `date`, formatted as YYYY-MM-DD HH:MM:SS in the store timezone.",
+          "example": "2026-08-13 14:57:47"
+        },
+        "register_name": {
+          "type": "string",
+          "description": "Cash register name.",
+          "example": "Main Register"
+        },
+        "employee": {
+          "type": "string",
+          "description": "Employee full name who recorded the transaction. Empty string when no employee is linked.",
+          "example": "Integrations"
+        },
+        "customer": {
+          "type": "string",
+          "description": "Customer full name. `Walkin Customer` when no customer is linked.",
+          "example": "Walkin Customer"
+        },
+        "id": {
+          "type": "string",
+          "description": "Invoice order number for Payment/Refund; trade-in order id; manual in/out id; expense code. Empty string for Shift rows.",
+          "example": "38349"
+        },
+        "invoice_db_id": {
+          "type": "string",
+          "description": "Internal invoice database id. Populated for Payment and Refund rows only; otherwise empty.",
+          "example": "74773"
+        },
+        "type": {
+          "type": "string",
+          "description": "Row type. Payment and Refund are cash-basis sales. Manual In, Manual Out, Shift, Trade In, and Expense are cash-drawer / non-sales movements.",
+          "enum": [
+            "Payment",
+            "Refund",
+            "Trade In",
+            "Manual In",
+            "Manual Out",
+            "Shift",
+            "Expense"
+          ],
+          "example": "Payment"
+        },
+        "amount": {
+          "type": "string",
+          "description": "Formatted currency string (store currency symbol), net of change given. Refunds, Manual Out, Trade In, and Expense are negative (e.g. `-$25.00`). Empty for Shift rows that have no amount.",
+          "example": "$230.00"
+        },
+        "source": {
+          "type": "string",
+          "description": "Origin of the transaction as a title, matching the in-app Transaction Log. Possible values: Web App, iPad POS Register, IOS Mobile App, Open API, WooCommerce, Ipad Offline, Online, Mobile App, Shopify.",
+          "enum": [
+            "Web App",
+            "iPad POS Register",
+            "IOS Mobile App",
+            "Open API",
+            "WooCommerce",
+            "Ipad Offline",
+            "Online",
+            "Mobile App",
+            "Shopify"
+          ],
+          "example": "Web App"
+        },
+        "report": {
+          "type": "string",
+          "description": "Usually empty. For shift-end rows, contains the shift id used as a reconciliation report identifier.",
+          "example": ""
+        },
+        "payment_method": {
+          "type": "string",
+          "description": "Payment method name (e.g. Cash, Credit Card). Empty for Shift rows.",
+          "example": "Cash"
+        },
+        "is_shift_started": {
+          "type": "boolean",
+          "description": "Present on Shift rows only. `true` for shift start, `false` for shift end."
+        },
+        "shift_start_notes": {
+          "type": "string",
+          "description": "Present on shift-start rows only."
+        },
+        "opening_balance": {
+          "type": "string",
+          "description": "Present on shift-start rows only. Opening cash balance as a string."
+        },
+        "start_difference": {
+          "type": "string",
+          "description": "Present on shift-start rows only."
+        },
+        "shift_end_notes": {
+          "type": "string",
+          "description": "Present on shift-end rows only."
+        },
+        "closing_balance": {
+          "type": "string",
+          "description": "Present on shift-end rows only. Closing cash balance as a string."
+        },
+        "end_difference": {
+          "type": "string",
+          "description": "Present on shift-end rows only."
+        }
+      }
+    },
+    "TransactionLogPaymentMethodTotal": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Payment method name.",
+          "example": "Cash"
+        },
+        "value": {
+          "type": "string",
+          "description": "Net total for this method as a formatted currency string (includes tax; refunds/outflows are negative).",
+          "example": "$199.00"
+        }
+      }
+    },
+    "TransactionLogsData": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "array",
+          "description": "Transaction rows for the payment_date range, newest first.",
+          "items": {
+            "$ref": "#/components/schemas/TransactionLogItem"
+          }
+        },
+        "summary": {
+          "type": "object",
+          "description": "Totals for the returned rows. Includes every requested type \u2014 use Type_id [1, 2] if you want this to equal cash-basis sales.",
+          "properties": {
+            "combined_total": {
+              "type": "string",
+              "description": "Net total of all returned rows as a formatted currency string.",
+              "example": "$458.00"
+            },
+            "payment_method_totals": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/TransactionLogPaymentMethodTotal"
+              }
+            }
+          }
+        },
+        "is_shift_started": {
+          "type": "boolean",
+          "description": "Whether the latest shift row in the result set is a shift start (`true`) or shift end (`false`).",
+          "example": true
+        },
+        "shift_register": {
+          "type": "string",
+          "description": "Register name from the latest shift row, if any.",
+          "example": ""
+        },
+        "shift_employee": {
+          "type": "string",
+          "description": "Employee name from the latest shift row, if any.",
+          "example": ""
+        }
+      }
+    },
+    "TransactionLogsResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "example": true
+        },
+        "statusCode": {
+          "type": "integer",
+          "example": 200
+        },
+        "message": {
+          "type": "string",
+          "example": "OK"
+        },
+        "data": {
+          "$ref": "#/components/schemas/TransactionLogsData"
+        }
+      }
+    }
+  },
+  "operations": [
+    {
+      "method": "GET",
+      "path": "/appointment",
+      "summary": "Get List of Leads/Appointments",
+      "description": "",
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "description": "The page number to fetch",
+          "schema": {
+            "type": "integer",
+            "default": 1
+          }
+        },
+        {
+          "name": "pagesize",
+          "in": "query",
+          "description": "The number of records per page",
+          "schema": {
+            "type": "integer",
+            "default": 20
+          }
+        },
+        {
+          "name": "keyword",
+          "in": "query",
+          "description": "Search term for filtering leads based on customer name, order ID, device name, serial, IMEI etc.",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "from_date",
+          "in": "query",
+          "description": "Start date for filtering leads (timestamp)",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "to_date",
+          "in": "query",
+          "description": "End date for filtering leads (timestamp)",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "description": "Filter by lead status (e.g., New, Pending)",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "assigned_to",
+          "in": "query",
+          "description": "Filter by user ID assigned to the lead",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "created_by",
+          "in": "query",
+          "description": "Filter by user ID who created the lead",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "repairType",
+          "in": "query",
+          "description": "Filter by repair type (0 => Repair, 1 => Claim Warranty)",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "serviceType",
+          "in": "query",
+          "description": "Filter by service type (1 => 'Mail In', 2 => 'Walk In', 3 => 'On Site', 4 => 'Pick Up', 5 => 'Drop Off')",
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/appointment/colors",
+      "summary": "Get list of colors for devices",
+      "description": "",
+      "parameters": [],
+      "requestBody": null
+    },
+    {
+      "method": "POST",
+      "path": "/appointment/create",
+      "summary": "Create a lead",
+      "description": "",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateLead"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/appointment/inventory",
+      "summary": "Get inventory list including manufacturers, devices, and problems",
+      "description": "",
+      "parameters": [],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/appointment/locations",
+      "summary": "Get list of store locations",
+      "description": "",
+      "parameters": [],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/appointment/repairtypes",
+      "summary": "Get list of repair types",
+      "description": "",
+      "parameters": [],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/appointment/servicetypes",
+      "summary": "Get list of service types like Mail In, Pick Up",
+      "description": "",
+      "parameters": [],
+      "requestBody": null
+    },
+    {
+      "method": "POST",
+      "path": "/appointment/timeslots",
+      "summary": "Get list of available booking slots for a specific date",
+      "description": "",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "example": "2024/05/01",
+                  "description": "Format is YYYY/MM/DD"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/billable-categories/services",
+      "summary": "Retrieves the list of problems (services) against a billable category",
+      "description": "",
+      "parameters": [
+        {
+          "name": "category_id",
+          "in": "query",
+          "required": true,
+          "description": "Billable (labor) category id; required and must belong to a labor category. Parent categories include nested billable descendants based on category path. Device ID is not required.",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "default_order",
+          "in": "query",
+          "required": false,
+          "description": "Set to 1 to sort services by name",
+          "schema": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "default": 0
+          }
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/calllogs",
+      "summary": "List Phone Pro call logs",
+      "description": "Returns a paginated list of Phone Pro call logs for the authenticated account. All datetimes in the response are in the store's local time zone.",
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "description": "Page number (1-based).",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          }
+        },
+        {
+          "name": "per_page",
+          "in": "query",
+          "description": "Page size. Values above 100 are capped at 100.",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20
+          }
+        },
+        {
+          "name": "pagesize",
+          "in": "query",
+          "description": "Alias for per_page.",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        {
+          "name": "from_date",
+          "in": "query",
+          "description": "Filter results from the start of this date (YYYY-MM-DD).",
+          "schema": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-01-01"
+          }
+        },
+        {
+          "name": "to_date",
+          "in": "query",
+          "description": "Filter results up to the end of this date (YYYY-MM-DD).",
+          "schema": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-01-31"
+          }
+        },
+        {
+          "name": "phone_number",
+          "in": "query",
+          "description": "Partial phone number search. Matches against caller and called numbers.",
+          "schema": {
+            "type": "string",
+            "example": "7809048222"
+          }
+        },
+        {
+          "name": "direction",
+          "in": "query",
+          "description": "Filter by call direction. Case-insensitive. inbound/in, outbound/out, voicemail.",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "inbound",
+              "in",
+              "outbound",
+              "out",
+              "voicemail"
+            ]
+          }
+        },
+        {
+          "name": "has_recording",
+          "in": "query",
+          "description": "When set, only returns calls that have a recording.",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "1",
+              "true",
+              "yes"
+            ]
+          }
+        },
+        {
+          "name": "call_type",
+          "in": "query",
+          "description": "Filter by call type (exact match), e.g. Outbound, Missed, Inbound.",
+          "schema": {
+            "type": "string",
+            "example": "Missed"
+          }
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "POST",
+      "path": "/createbrand",
+      "summary": "Add a new brand (manufacturer)",
+      "description": "Creates a new manufacturer/brand for the account.\n\n**Request Body Parameters:**\n- **name** (required): Manufacturer/brand name.\n- **category_id** (optional): Existing repair category ID. When provided (and greater than 0), the brand is mapped under that repair category in the category tree . Use `GET /repaircategories` to obtain valid category IDs.",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "name"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Manufacturer/brand name",
+                  "example": "Samsung"
+                },
+                "category_id": {
+                  "type": "integer",
+                  "description": "Optional. Existing repair category ID. When set, maps this brand to the given repair category so it appears under that category tree.",
+                  "example": 101
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/createmodel",
+      "summary": "Add a new Model (device)",
+      "description": "Creates a new device/model under an existing manufacturer.\n\n**Request Body Parameters:**\n- **brandId** (required): ID of the manufacturer/brand this model/device belongs to.\n- **name** (required): Device/model name.\n- **category_id** (optional): Existing repair category ID. When provided (and greater than 0), the device is mapped into the repair category tree. Use GET /repaircategories to obtain valid category IDs. The brand must already be linked to the same `category_id` (for example via `POST /createbrand` with `category_id`, or an existing mapping). If no brand\u2013category link exists, the device is still created but is not added to the category tree.\n\nIf a model with the same name already exists for the given brand in the account, the API returns HTTP 409 with the existing model details.",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "manufacturerId",
+                "name"
+              ],
+              "properties": {
+                "manufacturerId": {
+                  "type": "integer",
+                  "description": "Manufacturer ID under which the device will be created",
+                  "example": 2001
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Device/model name",
+                  "example": "Galaxy S21"
+                },
+                "category_id": {
+                  "type": "integer",
+                  "description": "Optional. Existing repair category ID. When set, maps this device under the manufacturer within that repair category tree. The manufacturer must already be linked to this category. Use GET /repaircategories to obtain valid category IDs.",
+                  "example": 101
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/customer",
+      "summary": "Add a new customer",
+      "description": "",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "first_name": {
+                  "type": "string",
+                  "example": "John"
+                },
+                "last_name": {
+                  "type": "string",
+                  "example": "Doe"
+                },
+                "address1": {
+                  "type": "string",
+                  "example": ""
+                },
+                "address2": {
+                  "type": "string",
+                  "example": ""
+                },
+                "city": {
+                  "type": "string",
+                  "example": ""
+                },
+                "contact_person": {
+                  "type": "string",
+                  "example": ""
+                },
+                "country": {
+                  "type": "string",
+                  "example": ""
+                },
+                "customer_group_id": {
+                  "type": "string",
+                  "example": "1"
+                },
+                "email": {
+                  "type": "string",
+                  "example": ""
+                },
+                "email_opt_in": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "mobile": {
+                  "type": "string",
+                  "example": "+4551942072"
+                },
+                "network": {
+                  "type": "string",
+                  "example": ""
+                },
+                "orgonization": {
+                  "type": "string",
+                  "example": ""
+                },
+                "phone": {
+                  "type": "string",
+                  "example": ""
+                },
+                "postcode": {
+                  "type": "string",
+                  "example": ""
+                },
+                "refered_by": {
+                  "type": "string",
+                  "example": "Search Engine"
+                },
+                "sms_opt_in": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "state": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/customers",
+      "summary": "Get customers list",
+      "description": "",
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "required": true,
+          "description": "Page number for pagination.",
+          "schema": {
+            "type": "integer"
+          },
+          "example": 1
+        },
+        {
+          "name": "pagesize",
+          "in": "query",
+          "required": false,
+          "description": "Number of records per page.",
+          "schema": {
+            "type": "integer",
+            "description": "Number of items per page for pagination"
+          }
+        },
+        {
+          "in": "query",
+          "name": "referredby",
+          "schema": {
+            "type": "string"
+          },
+          "description": "Like Facebook/Friend"
+        },
+        {
+          "in": "query",
+          "name": "keyword",
+          "schema": {
+            "type": "string"
+          },
+          "description": "it works on customer firstname/lastname, phone/mobile, email, postcode, city, organization and driving licence"
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "POST",
+      "path": "/customers",
+      "summary": "Add a new customer",
+      "description": "",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "first_name": {
+                  "type": "string",
+                  "example": "John"
+                },
+                "last_name": {
+                  "type": "string",
+                  "example": "Doe"
+                },
+                "address1": {
+                  "type": "string",
+                  "example": ""
+                },
+                "address2": {
+                  "type": "string",
+                  "example": ""
+                },
+                "city": {
+                  "type": "string",
+                  "example": ""
+                },
+                "contact_person": {
+                  "type": "string",
+                  "example": ""
+                },
+                "country": {
+                  "type": "string",
+                  "example": ""
+                },
+                "customer_group_id": {
+                  "type": "string",
+                  "example": "1"
+                },
+                "email": {
+                  "type": "string",
+                  "example": ""
+                },
+                "email_opt_in": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "mobile": {
+                  "type": "string",
+                  "example": "+4551942072"
+                },
+                "network": {
+                  "type": "string",
+                  "example": ""
+                },
+                "orgonization": {
+                  "type": "string",
+                  "example": ""
+                },
+                "phone": {
+                  "type": "string",
+                  "example": ""
+                },
+                "postcode": {
+                  "type": "string",
+                  "example": ""
+                },
+                "refered_by": {
+                  "type": "string",
+                  "example": "Search Engine"
+                },
+                "sms_opt_in": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "state": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/customers/{customer-Id}",
+      "summary": "Update customer by ID",
+      "description": "",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "customer-Id",
+          "schema": {
+            "type": "string"
+          },
+          "required": true,
+          "description": "cid of the customer to update"
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "address1": {
+                  "type": "string",
+                  "example": ""
+                },
+                "address2": {
+                  "type": "string",
+                  "example": ""
+                },
+                "city": {
+                  "type": "string",
+                  "example": ""
+                },
+                "contact_person": {
+                  "type": "string",
+                  "example": ""
+                },
+                "country": {
+                  "type": "string",
+                  "example": ""
+                },
+                "customer_group_id": {
+                  "type": "string",
+                  "example": "1"
+                },
+                "email": {
+                  "type": "string",
+                  "example": ""
+                },
+                "email_opt_in": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "first_name": {
+                  "type": "string",
+                  "example": "John"
+                },
+                "last_name": {
+                  "type": "string",
+                  "example": "Wick"
+                },
+                "mobile": {
+                  "type": "string",
+                  "example": "+4551942072"
+                },
+                "network": {
+                  "type": "string",
+                  "example": ""
+                },
+                "orgonization": {
+                  "type": "string",
+                  "example": ""
+                },
+                "phone": {
+                  "type": "string",
+                  "example": ""
+                },
+                "postcode": {
+                  "type": "string",
+                  "example": ""
+                },
+                "refered_by": {
+                  "type": "string",
+                  "example": "Search Engine"
+                },
+                "sms_opt_in": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "state": {
+                  "type": "string",
+                  "example": ""
+                },
+                "customer_custom_fields": {
+                  "type": "object",
+                  "properties": {
+                    "licenseCategories": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "example": "Licence Categories"
+                        },
+                        "value": {
+                          "type": "object",
+                          "example": {
+                            "Repair": "0",
+                            "Retail": "1",
+                            "Wholesale": "0",
+                            "Import/Export": "1"
+                          }
+                        }
+                      }
+                    },
+                    "licenceNumber": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "example": "Licence Number"
+                        },
+                        "value": {
+                          "type": "string",
+                          "example": "BL-CA-2023-110198"
+                        }
+                      }
+                    },
+                    "licenceType": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "example": "Licence Type"
+                        },
+                        "value": {
+                          "type": "string",
+                          "example": "Business Licence"
+                        }
+                      }
+                    },
+                    "licenceExpiryDate": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "example": "Licence Expiry Date"
+                        },
+                        "value": {
+                          "type": "string",
+                          "format": "date",
+                          "example": "2025-04-16"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/customers/{customerId}",
+      "summary": "Get customer by ID",
+      "description": "",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "customerId",
+          "schema": {
+            "type": "string"
+          },
+          "required": true,
+          "description": "ID of the customer to retrieve"
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/devices",
+      "summary": "Retrieves devices based on brand and type",
+      "description": "",
+      "parameters": [
+        {
+          "name": "brand",
+          "in": "query",
+          "required": false,
+          "description": "Brand/Manufacturer Name of the device",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "device_name",
+          "in": "query",
+          "required": false,
+          "description": "Name of the device",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/employees",
+      "summary": "Retrieves a list of employees",
+      "description": "",
+      "parameters": [],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/employees/payroll",
+      "summary": "Retrieves employee payroll (shift-level) report",
+      "description": "Returns the same per-shift payroll data shown in the Statistics \u2192 Employee Payroll web report. Store is determined by the API key.",
+      "parameters": [
+        {
+          "name": "employee_id",
+          "in": "query",
+          "required": false,
+          "description": "Employee ID. Omitted = all employees for the store.",
+          "schema": {
+            "type": "integer",
+            "example": 101
+          }
+        },
+        {
+          "name": "from_date",
+          "in": "query",
+          "required": false,
+          "description": "Start of date range. Format: YYYY-MM-DD or Unix timestamp. Default: first day of current month.",
+          "schema": {
+            "type": "string"
+          },
+          "example": "2026-07-01"
+        },
+        {
+          "name": "to_date",
+          "in": "query",
+          "required": false,
+          "description": "End of date range. Format: YYYY-MM-DD or Unix timestamp. Default: today.",
+          "schema": {
+            "type": "string"
+          },
+          "example": "2026-07-23"
+        },
+        {
+          "name": "page",
+          "in": "query",
+          "required": false,
+          "description": "Page number (default 1)",
+          "schema": {
+            "type": "integer",
+            "example": 1
+          }
+        },
+        {
+          "name": "pagesize",
+          "in": "query",
+          "required": false,
+          "description": "Records per page (default 25, max 250)",
+          "schema": {
+            "type": "integer",
+            "example": 25
+          }
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/employees/payroll-report",
+      "summary": "Retrieves payroll report by month",
+      "description": "",
+      "parameters": [
+        {
+          "name": "employee_id",
+          "in": "query",
+          "required": false,
+          "description": "Employee ID",
+          "schema": {
+            "type": "integer",
+            "example": 101
+          }
+        },
+        {
+          "name": "schedule",
+          "in": "query",
+          "required": false,
+          "description": "Pay schedule filter. 1 = Daily, 2 = Weekly, 3 = Monthly",
+          "schema": {
+            "type": "integer",
+            "enum": [
+              1,
+              2,
+              3
+            ],
+            "example": 1
+          }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "required": false,
+          "description": "Payment status filter. 1 = Paid, 2 = UnPaid. Omitted = no status filter.",
+          "schema": {
+            "type": "integer",
+            "enum": [
+              1,
+              2
+            ],
+            "example": 2
+          }
+        },
+        {
+          "name": "month",
+          "in": "query",
+          "required": false,
+          "description": "Month number (1-12). Omitted = no month filter.",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12,
+            "example": 7
+          }
+        },
+        {
+          "name": "year",
+          "in": "query",
+          "required": false,
+          "description": "Year. Omitted = no year filter.",
+          "schema": {
+            "type": "integer",
+            "example": 2026
+          }
+        },
+        {
+          "name": "page",
+          "in": "query",
+          "required": false,
+          "description": "Page number (default 1)",
+          "schema": {
+            "type": "integer",
+            "example": 1
+          }
+        },
+        {
+          "name": "pagesize",
+          "in": "query",
+          "required": false,
+          "description": "Records per page (default 25, max 250)",
+          "schema": {
+            "type": "integer",
+            "example": 25
+          }
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/inventory",
+      "summary": "List inventory items",
+      "description": "List inventory items. Use missing_cost_price=1 to return only items with null/empty/zero cost.",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "pagesize",
+          "description": "Number of items per page, Max limit is 1000 records.",
+          "schema": {
+            "type": "integer",
+            "description": "Number of items per page for pagination"
+          },
+          "required": false
+        },
+        {
+          "in": "query",
+          "name": "keyword",
+          "description": "it works on {id}, {Item Name} and {SKU}",
+          "schema": {
+            "type": "string",
+            "description": "Keyword to search by id, name or SKU"
+          },
+          "required": false
+        },
+        {
+          "in": "query",
+          "name": "missing_cost_price",
+          "required": false,
+          "description": "Set to 1 to return only items missing cost price (null, empty, or 0).",
+          "schema": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "example": 1
+          }
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/inventory/additionalinfo",
+      "summary": "Get inventory additional info (Conditions and Physical Locations)",
+      "description": "Returns available Condition and Physical Location options for the authenticated store. Use these values when creating or updating inventory items via POST /inventory/addnewitem or PUT /inventory/{id}.",
+      "parameters": [],
+      "requestBody": null
+    },
+    {
+      "method": "POST",
+      "path": "/inventory/addnewitem",
+      "summary": "Add a new inventory item",
+      "description": "",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Item"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/inventory/addnewtradein",
+      "summary": "Add new Trade-In item",
+      "description": "",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "summary": {
+                  "type": "object",
+                  "properties": {
+                    "customer_id": {
+                      "type": "integer",
+                      "example": 123314
+                    }
+                  }
+                },
+                "tradein": {
+                  "type": "object",
+                  "properties": {
+                    "item_name": {
+                      "type": "string",
+                      "example": "OPPO F21 Pro 5G"
+                    },
+                    "imei": {
+                      "type": "string",
+                      "example": "433521235642122"
+                    },
+                    "serial": {
+                      "type": "string",
+                      "example": "123121412312"
+                    },
+                    "manufacturer": {
+                      "type": "integer",
+                      "example": 12231
+                    },
+                    "device": {
+                      "type": "integer",
+                      "example": 44221
+                    },
+                    "color": {
+                      "type": "string",
+                      "example": "Black"
+                    },
+                    "size": {
+                      "type": "string",
+                      "example": "128 GB"
+                    },
+                    "network": {
+                      "type": "string",
+                      "example": ""
+                    },
+                    "cond": {
+                      "type": "string",
+                      "example": "Used"
+                    },
+                    "sku": {
+                      "type": "string",
+                      "example": "122124112412"
+                    },
+                    "admin_notes": {
+                      "type": "string",
+                      "example": ""
+                    },
+                    "retail_price": {
+                      "type": "integer",
+                      "example": 520.0
+                    },
+                    "cost_price": {
+                      "type": "integer",
+                      "example": 480.0
+                    },
+                    "tax_inclusive": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": ""
+                    },
+                    "condition_on_sale": {
+                      "type": "string",
+                      "example": ""
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/inventory/updatetradein/{id}",
+      "summary": "Update Trade-In Information",
+      "description": "",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "The ID of the trade-in item  which is {inv_id} in the response of create tradein API",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "item_name": {
+                  "type": "string",
+                  "example": "Oppo F21 Pro",
+                  "description": "The name of the item"
+                },
+                "imei": {
+                  "type": "string",
+                  "example": "433521235642122"
+                },
+                "serial": {
+                  "type": "string",
+                  "example": "123121412312"
+                },
+                "manufacturer": {
+                  "type": "integer",
+                  "example": 12231
+                },
+                "device": {
+                  "type": "integer",
+                  "example": 44221
+                },
+                "color": {
+                  "type": "string",
+                  "example": "Black"
+                },
+                "size": {
+                  "type": "string",
+                  "example": "128 GB"
+                },
+                "network": {
+                  "type": "string",
+                  "example": ""
+                },
+                "cond": {
+                  "type": "string",
+                  "example": "Used"
+                },
+                "sku": {
+                  "type": "string",
+                  "example": "122124112412"
+                },
+                "admin_notes": {
+                  "type": "string",
+                  "example": ""
+                },
+                "retail_price": {
+                  "type": "integer",
+                  "example": 520.0
+                },
+                "cost_price": {
+                  "type": "integer",
+                  "example": 480.0
+                },
+                "tax_inclusive": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "status": {
+                  "type": "string",
+                  "example": "Scrapped for Parts"
+                },
+                "description": {
+                  "type": "string",
+                  "example": ""
+                },
+                "condition_on_sale": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/inventory/converttradeintoinventory",
+      "summary": "Convert Trade-In to Inventory",
+      "description": "Moves a purchased trade-in into sellable inventory, either as a new item or by adding it to an existing item.\n\n**Authentication:** Bearer token, OAuth, or API key.\n\n**OAuth module:** `inventory`  \n**OAuth capability:** `update`  \nOAuth tokens with only inventory **view** permission receive a `403` response.\n\n**Conversion types (`type`):**\n- `1` - Create a **new** inventory item with serial/IMEI tracking. `product_id` is not required.\n- `2` - Add the trade-in to an **existing** serialized inventory item and increase stock by 1. `product_id` is required.\n- `3` - Create a **new** inventory item without serial tracking. `product_id` is not required.\n- `4` - Add the trade-in to an **existing** non-serialized inventory item and increase stock by 1. `product_id` is required.\n\nIf the trade-in has both an IMEI and a serial number, the IMEI is used. The trade-in and target item must belong to your account and the current store.",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "type",
+                "tradein_id"
+              ],
+              "properties": {
+                "type": {
+                  "type": "integer",
+                  "enum": [
+                    1,
+                    2,
+                    3,
+                    4
+                  ],
+                  "description": "How to convert the trade-in: 1 = create a new serialized item, 2 = add to an existing serialized item, 3 = create a new non-serialized item, 4 = add to an existing non-serialized item",
+                  "example": 1
+                },
+                "tradein_id": {
+                  "type": "integer",
+                  "description": "ID of the trade-in item to convert",
+                  "example": 12345
+                },
+                "product_id": {
+                  "type": "integer",
+                  "description": "ID of the existing inventory item to add to. Required when `type` is 2 or 4.",
+                  "example": 67890
+                }
+              }
+            },
+            "examples": {
+              "createNewSerialized": {
+                "summary": "Create a new serialized item",
+                "value": {
+                  "type": 1,
+                  "tradein_id": 12345
+                }
+              },
+              "addToExistingSerialized": {
+                "summary": "Add to an existing serialized item",
+                "value": {
+                  "type": 2,
+                  "tradein_id": 12345,
+                  "product_id": 67890
+                }
+              },
+              "createNewNonSerialized": {
+                "summary": "Create a new non-serialized item",
+                "value": {
+                  "type": 3,
+                  "tradein_id": 12345
+                }
+              },
+              "addToExistingNonSerialized": {
+                "summary": "Add to an existing non-serialized item",
+                "value": {
+                  "type": 4,
+                  "tradein_id": 12345,
+                  "product_id": 67890
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/inventory/{id}",
+      "summary": "Update an existing inventory item",
+      "description": "",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "The ID of the inventory item",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Item"
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "id"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "example": 132,
+                      "description": "Unique identifier for the item"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/inventorytransfer",
+      "summary": "Get the list of inventory transfers",
+      "description": "Retrieves a list of inventory transfers with optional filters.",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "query",
+          "description": "Purchase order ID (Like TO-140)",
+          "schema": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        {
+          "name": "from_store",
+          "in": "query",
+          "description": "Originating store ID",
+          "schema": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        {
+          "name": "to_store",
+          "in": "query",
+          "description": "Destination store ID",
+          "schema": {
+            "type": "integer",
+            "example": ""
+          }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "description": "Status of the inventory transfer (Like Completed)",
+          "schema": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        {
+          "name": "from_date",
+          "in": "query",
+          "description": "Start date for filtering results (Format : YYYY-MM-DD)",
+          "schema": {
+            "type": "string",
+            "format": "date",
+            "example": ""
+          }
+        },
+        {
+          "name": "to_date",
+          "in": "query",
+          "description": "End date for filtering results (Format : YYYY-MM-DD)",
+          "schema": {
+            "type": "string",
+            "format": "date",
+            "example": ""
+          }
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/invoices",
+      "summary": "Get Invoice listing",
+      "description": "Invoice listing. Line items include cost_price, item_type, bill payment fields (provider/network/status), and category_id/category_name when available.",
+      "parameters": [
+        {
+          "name": "keyword",
+          "in": "query",
+          "description": "it works on customer's {firstname}, {lastname}, {Email}, {phone/mobile}, {walk in customer} ,and then {Invoice Number},{Product Name}, {Description}",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "page",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "default": 0
+          }
+        },
+        {
+          "name": "pagesize",
+          "in": "query",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "description": "Like Paid / Unpaid/ Partial / Refunded",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "payment_method",
+          "in": "query",
+          "description": "Cash / Credit Card/ RepairDesk Pay / Other",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "from_date",
+          "in": "query",
+          "description": "Unix timestamp. Filters invoices by created date (order_date), not payment date. For cash-basis sales by payment date, use GET /report/transactionlogs.",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "to_date",
+          "in": "query",
+          "description": "Unix timestamp. Filters invoices by created date (order_date), not payment date. For cash-basis sales by payment date, use GET /report/transactionlogs.",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "from_datetime",
+          "in": "query",
+          "description": "Unix timestamp (inclusive). Filters invoices by created date/time (order_date). Use when you need a time-of-day start instead of from_date.",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "to_datetime",
+          "in": "query",
+          "description": "Unix timestamp (inclusive). Filters invoices by created date/time (order_date). Use when you need a time-of-day end instead of to_date.",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "sort_order",
+          "in": "query",
+          "description": "ASC/ DESC",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "POST",
+      "path": "/invoices",
+      "summary": "Create Invoice",
+      "description": "",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "summary": {
+                  "type": "object",
+                  "properties": {
+                    "customer_id": {
+                      "type": "string",
+                      "example": 388
+                    },
+                    "due_on": {
+                      "type": "string",
+                      "example": 1472122800
+                    },
+                    "created_date": {
+                      "type": "string",
+                      "example": 1472122800
+                    }
+                  }
+                },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "product_id": {
+                        "type": "string",
+                        "example": 1742698
+                      },
+                      "sku": {
+                        "type": "string",
+                        "example": "0900002"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Antenna Interconnect Cable for iPhone 5"
+                      },
+                      "quantity": {
+                        "type": "string",
+                        "example": 2
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Testing devices"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "example": ""
+                      },
+                      "line_discount": {
+                        "type": "string",
+                        "example": 0.0
+                      },
+                      "price": {
+                        "type": "string",
+                        "example": 20.0
+                      },
+                      "gst": {
+                        "type": "string",
+                        "example": 2.5
+                      },
+                      "taxclass": {
+                        "type": "string",
+                        "example": 1
+                      },
+                      "serials": {
+                        "type": "array",
+                        "example": [
+                          "MHQ83104"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/invoices/{Invoice-Id}",
+      "summary": "Get Single Invoice by Id",
+      "description": "Single invoice. Items include bill payment fields (provider/network/status) and category_id/category_name when available.",
+      "parameters": [
+        {
+          "name": "Invoice-Id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/invoices/{Invoice-Id}/dueamount",
+      "summary": "Get Due amount of invoice",
+      "description": "",
+      "parameters": [
+        {
+          "name": "Invoice-Id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "POST",
+      "path": "/invoices/{Invoice-Id}/payments",
+      "summary": "Add payment to invoice",
+      "description": "Add payment to an invoice.\n\n**Request Body Parameters:**\n- **amount** (required): Payment amount\n- **method** (required): Payment method (e.g., Cash, Credit Card, RepairDesk Pay, Other)\n- **notes** (optional): Payment notes\n- **payment_date** (optional): Payment date in Unix timestamp format. If not provided, current timestamp will be used\n- **transaction_id** (optional): Transaction ID\n- **type** (optional): Card brand (for card payments)",
+      "parameters": [
+        {
+          "name": "Invoice-Id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "amount",
+                "method"
+              ],
+              "properties": {
+                "amount": {
+                  "type": "number",
+                  "example": 45.0
+                },
+                "method": {
+                  "type": "string",
+                  "example": "Card"
+                },
+                "notes": {
+                  "type": "string",
+                  "example": "Payment received"
+                },
+                "payment_date": {
+                  "type": "integer",
+                  "example": 1472122800
+                },
+                "transaction_id": {
+                  "type": "string",
+                  "example": "TXN123456"
+                },
+                "type": {
+                  "type": "string",
+                  "example": "Visa"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/networks",
+      "summary": "Retrieves a list of all networks",
+      "description": "",
+      "parameters": [],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/parts",
+      "summary": "Retrieves a list of all parts",
+      "description": "",
+      "parameters": [],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/paymentmethods",
+      "summary": "Retrieves a list of payment methods",
+      "description": "",
+      "parameters": [],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/problems/{Device-Id}",
+      "summary": "Retrieves the list of problems (services) against a device",
+      "description": "",
+      "parameters": [
+        {
+          "name": "Device-Id",
+          "in": "path",
+          "required": true,
+          "description": "The ID of the Device to get the",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/purchaseorderdetails",
+      "summary": "Get Purchase Orders List with Item details",
+      "description": "Retrieves a list of purchase order details based on the provided parameters.",
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "required": true,
+          "description": "Page number for pagination.",
+          "schema": {
+            "type": "integer"
+          },
+          "example": 1
+        },
+        {
+          "name": "pagesize",
+          "in": "query",
+          "required": true,
+          "description": "Number of records per page.",
+          "schema": {
+            "type": "integer"
+          },
+          "example": 10
+        },
+        {
+          "name": "id",
+          "in": "query",
+          "required": false,
+          "description": "Purchase order ID",
+          "schema": {
+            "type": "integer"
+          },
+          "example": ""
+        },
+        {
+          "name": "item_name",
+          "in": "query",
+          "required": false,
+          "description": "Product name",
+          "schema": {
+            "type": "string"
+          },
+          "example": ""
+        },
+        {
+          "name": "manufacturer",
+          "in": "query",
+          "required": false,
+          "description": "Manufacturer ID",
+          "schema": {
+            "type": "integer"
+          },
+          "example": ""
+        },
+        {
+          "name": "purchase_order_status",
+          "in": "query",
+          "required": false,
+          "description": "PO-Status",
+          "schema": {
+            "type": "string"
+          },
+          "example": ""
+        },
+        {
+          "name": "po_order_id",
+          "in": "query",
+          "required": false,
+          "description": "PO Order number",
+          "schema": {
+            "type": "string"
+          },
+          "example": ""
+        },
+        {
+          "name": "supplier",
+          "in": "query",
+          "required": false,
+          "description": "Supplier Name",
+          "schema": {
+            "type": "string"
+          },
+          "example": ""
+        },
+        {
+          "name": "sku",
+          "in": "query",
+          "required": false,
+          "description": "Item SKU",
+          "schema": {
+            "type": "string"
+          },
+          "example": ""
+        },
+        {
+          "name": "createdd_date",
+          "in": "query",
+          "required": false,
+          "description": "It Will match the exact date [YYYY-MM-DD]",
+          "schema": {
+            "type": "string"
+          },
+          "example": ""
+        },
+        {
+          "name": "created_date",
+          "in": "query",
+          "required": false,
+          "description": "Cases: today, 7days, 14days, 30days or date starting from the given date YYYY-MM-DD",
+          "schema": {
+            "type": "string"
+          },
+          "example": ""
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/purchaseorders",
+      "summary": "Get Purchase Orders List",
+      "description": "Retrieves a list of purchase order details based on the provided parameters.",
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "required": true,
+          "description": "Page number for pagination.",
+          "schema": {
+            "type": "integer"
+          },
+          "example": 1
+        },
+        {
+          "name": "pagesize",
+          "in": "query",
+          "required": true,
+          "description": "Number of records per page.",
+          "schema": {
+            "type": "integer"
+          },
+          "example": 10
+        },
+        {
+          "name": "id",
+          "in": "query",
+          "required": false,
+          "description": "Purchase order ID",
+          "schema": {
+            "type": "integer"
+          },
+          "example": ""
+        },
+        {
+          "name": "item_name",
+          "in": "query",
+          "required": false,
+          "description": "Product name",
+          "schema": {
+            "type": "string"
+          },
+          "example": ""
+        },
+        {
+          "name": "manufacturer",
+          "in": "query",
+          "required": false,
+          "description": "Manufacturer ID",
+          "schema": {
+            "type": "integer"
+          },
+          "example": ""
+        },
+        {
+          "name": "purchase_order_status",
+          "in": "query",
+          "required": false,
+          "description": "PO-Status",
+          "schema": {
+            "type": "string"
+          },
+          "example": ""
+        },
+        {
+          "name": "po_order_id",
+          "in": "query",
+          "required": false,
+          "description": "PO Order number",
+          "schema": {
+            "type": "string"
+          },
+          "example": ""
+        },
+        {
+          "name": "supplier",
+          "in": "query",
+          "required": false,
+          "description": "Supplier Name",
+          "schema": {
+            "type": "string"
+          },
+          "example": ""
+        },
+        {
+          "name": "sku",
+          "in": "query",
+          "required": false,
+          "description": "Item SKU",
+          "schema": {
+            "type": "string"
+          },
+          "example": ""
+        },
+        {
+          "name": "createdd_date",
+          "in": "query",
+          "required": false,
+          "description": "It Will match the exact date [YYYY-MM-DD]",
+          "schema": {
+            "type": "string"
+          },
+          "example": ""
+        },
+        {
+          "name": "created_date",
+          "in": "query",
+          "required": false,
+          "description": "Cases: today, 7days, 14days, 30days or date starting from the given date YYYY-MM-DD",
+          "schema": {
+            "type": "string"
+          },
+          "example": ""
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/referredby",
+      "summary": "Retrieves a list of referred by sources",
+      "description": "",
+      "parameters": [],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/repaircategories",
+      "summary": "Get type of repair categories and linked manufacturers' devices",
+      "description": "",
+      "parameters": [],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/report/transactionlogs",
+      "summary": "List payment transactions by payment date",
+      "description": "Returns payment, refund, and cash-drawer transactions filtered by **payment date** (`payment_date`), not invoice created date.\n\nUse this endpoint to reproduce cash-basis Store Summary / Sales totals \u2014 revenue recognized on the day money was collected (tax included). `GET /invoices` filters by invoice **created date** (`order_date`) and cannot match cash-basis daily sales.\n\n**Auth:** Same as the rest of the API \u2014 `api_key` query parameter, HTTP Basic, or Bearer token.\n\n**Date filter (`from` / `to`):**\n- Unix timestamps as query parameters, interpreted in **UTC**, applied to `payment_date` (and to shift start time / expense date for those row types).\n- Example: `from=1786579200&to=1786665599` is 13 Aug 2026 00:00:00\u201323:59:59 UTC.\n- Both `from` and `to` must be sent together.\n- If either is omitted, the endpoint defaults to **today** (the authenticated store's current date).\n\n**Cash-basis daily sales:**\nSum only rows where `type` is `Payment` or `Refund`. Amounts include tax and are net of change given. Refunds are negative. Alternatively, send `Type_id=1,2` and use `summary.combined_total` for the requested range.\n\nDo **not** treat `Manual In`, `Manual Out`, `Shift`, `Trade In`, or `Expense` as sales \u2014 those are cash-drawer / non-sales movements. If you request all types, do **not** use `summary.combined_total` as Total Sales.\n\n**Row types (`Type_id`):**\n- **1 \u2014 Payment:** Sales (cash-basis revenue collected).\n- **2 \u2014 Refund:** Sales (reduces cash-basis revenue; amount is negative).\n- **3 \u2014 Trade In:** Non-sales / cash-drawer (device purchase payout).\n- **4 \u2014 Manual In:** Cash-drawer movement.\n- **5 \u2014 Manual Out:** Cash-drawer movement.\n- **6 / 7 \u2014 Shift:** Shift start / end (opening and closing balance; not a sale).\n- **8 \u2014 Expense:** Non-sales / cash-drawer.\n\nDefault `Type_id` is all types `1,2,3,4,5,6,7,8`.\n\n**Response notes:**\n- `date` is a Unix timestamp.\n- `transaction_datetime` is the same instant in `YYYY-MM-DD HH:MM:SS` in the store timezone.\n- `source` is a title string (not an integer), e.g. `Web App`, `Online`, `Open API`.\n- `amount` values are formatted currency strings (e.g. `$230.00`, `-$25.00`), net of change given.\n\nThis endpoint is **not paginated**; all matching rows are returned in one response.\n\n**Example request:**\n`GET /v1/report/transactionlogs?api_key={api_key}&from=1786579200&to=1786665599&Type_id=1,2`",
+      "parameters": [
+        {
+          "name": "from",
+          "in": "query",
+          "description": "Start of the payment_date range as a Unix timestamp (UTC). Must be sent together with `to`. If omitted (or `to` is omitted), defaults to today.",
+          "schema": {
+            "type": "integer",
+            "example": 1786579200
+          }
+        },
+        {
+          "name": "to",
+          "in": "query",
+          "description": "End of the payment_date range as a Unix timestamp (UTC). Must be sent together with `from`. If omitted (or `from` is omitted), defaults to today.",
+          "schema": {
+            "type": "integer",
+            "example": 1786665599
+          }
+        },
+        {
+          "name": "Type_id",
+          "in": "query",
+          "description": "Transaction type filter. Comma-separated IDs or a single integer. 1=Payment, 2=Refund, 3=Trade In, 4=Manual In, 5=Manual Out, 6=Shift start, 7=Shift end, 8=Expense. Default: all types. Use `1,2` for cash-basis sales only. Parameter name is case-sensitive (`Type_id`).",
+          "schema": {
+            "type": "string",
+            "example": "1,2"
+          }
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/statuses",
+      "summary": "Retrieves a list of all Ticket statuses",
+      "description": "",
+      "parameters": [],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/taxclasses",
+      "summary": "Retrieves a list of tax classes against a store location",
+      "description": "",
+      "parameters": [],
+      "requestBody": null
+    },
+    {
+      "method": "POST",
+      "path": "/ticket/addnote",
+      "summary": "Add ticket notes",
+      "description": "Add notes to a ticket.\n\n**Request Body Parameters:**\n- **id**: The ticket ID\n- **deviceId (optional)**: The ticket inv ID\n- **type**: Note type: 0=Internal Note, 1=Diagnostic Note\n- **note**: The note text to be added\n- **is_flag**: Flag status - 0=normal note, 1=flagged note",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "example": "3266"
+                },
+                "type": {
+                  "type": "integer",
+                  "example": "1"
+                },
+                "deviceId": {
+                  "type": "integer",
+                  "example": "121"
+                },
+                "note": {
+                  "type": "string",
+                  "example": "Adding a sample note"
+                },
+                "is_flag": {
+                  "type": "integer",
+                  "example": "0"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/ticket/prepost-images",
+      "summary": "Upload pre/post condition images for ticket device",
+      "description": "Upload pre-condition or post-condition images for an existing ticket device.\n\n**Request Body Parameters:**\n- **ticket_inv_id**: Required. The ticket device ID (app_ticket_inv.id). Also accepts 'id' as alias.\n- **condition**: Required. Must be either 'pre' or 'post'.\n- **images[]**: Required. One or more image files.\n\n**Constraints:**\n- Supported formats: JPEG, PNG, GIF\n- Maximum file size: 15 MB per file\n\n**Alternative endpoint:** POST /v1/ticket/uploadprepostimages",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "ticket_inv_id",
+                "condition",
+                "images"
+              ],
+              "properties": {
+                "ticket_inv_id": {
+                  "type": "integer",
+                  "description": "Ticket device ID (app_ticket_inv.id). Also accepts 'id' as alias.",
+                  "example": 12345
+                },
+                "condition": {
+                  "type": "string",
+                  "enum": [
+                    "pre",
+                    "post"
+                  ],
+                  "description": "Image condition type: 'pre' for pre-condition or 'post' for post-condition",
+                  "example": "pre"
+                },
+                "images": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "description": "One or more image files. Also accepts 'files[]' or single 'image'."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/ticket/updateticket",
+      "summary": "Update or create ticket",
+      "description": "Update ticket details.\n\n**Devices in the payload**: Correspond to **Ticket Line Items**.\n\n**Parts in the payload**: Represent the **parts attached to the ticket during its creation**.\n\n**Image URLs**: Use **pre_image_urls** and **post_image_urls** arrays in each device to automatically fetch and upload images from public URLs.\n\n**Request Body Parameters:**\n\n**Ticket**:\n   - **id**: Required. The unique identifier for the ticket. This **id** corresponds to the **id** inside the **summary** object in the payload.\n\n**Ticket Line Item**:\n   - **id**: Required. If the line item exists, provide its **id** (this **id** corresponds to the **id** inside the **devices** object in the payload). If the line item does not exist, a new one will be created.\n   - **name**: Required. The name of the service to be updated. If **repairProdItems** are provided, the service name will be updated by concatenating all the provided names. If **repairProdItems** are not provided, the device name will remain unchanged in its original form unless updated by modifying the **name** field inside **devices** (e.g., { \"name\": \"updated name\" }).\n   - **device**: Required. Inside the **devices** object, the **device** field (e.g., \"device\": 123) represents the **id** from the **app_devices** table.\n   - **pre_image_urls**: Optional. Array of public image URLs (http/https) for pre-condition images. Max 15 MB per image.\n   - **post_image_urls**: Optional. Array of public image URLs (http/https) for post-condition images. Max 15 MB per image.\n   - **due_on**: Represents the due date of line item in Unix timestamp format.\n\n**Parts**:\n   - The **id** inside the **parts** object (e.g., \"parts\": 604) corresponds to the **app_ticket_inv_parts** table. If the **id** exists in the table, it means the part is already attached to the ticket and will be updated. If the **id** is not provided in the **parts** section of the payload, a new entry will be created in the **app_ticket_inv_parts** table, and the part will be associated with the ticket.\n   - To update ticket parts, use the crossId value (retrieved from  **tickets/{Ticket-Id} Get Single Ticket**) in the Parts array of Update Ticket to specify the part id.",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "summary": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "example": 2327
+                    },
+                    "customer_id": {
+                      "type": "integer",
+                      "example": 376
+                    },
+                    "discount": {
+                      "type": "number",
+                      "example": 20.0
+                    },
+                    "subtotal": {
+                      "type": "number",
+                      "example": 250.0
+                    },
+                    "total_tax": {
+                      "type": "number",
+                      "example": 15.0
+                    },
+                    "total": {
+                      "type": "number",
+                      "example": 145.0
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                },
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "example": 3932
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Mobile Repair"
+                      },
+                      "device": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "gst": {
+                        "type": "number",
+                        "example": 50.0
+                      },
+                      "price": {
+                        "type": "number",
+                        "example": 200.5
+                      },
+                      "status": {
+                        "type": "string",
+                        "example": "test updated"
+                      },
+                      "due_on": {
+                        "type": "integer",
+                        "example": 1735689600
+                      },
+                      "imei": {
+                        "type": "string",
+                        "example": "123456789012313"
+                      },
+                      "repair_prod_id": {
+                        "type": "string",
+                        "example": "55852717"
+                      },
+                      "additional_notes": {
+                        "type": "string",
+                        "example": "Handle with care - premium screen"
+                      },
+                      "PreConditions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "example": "Power Button"
+                            },
+                            "result": {
+                              "type": "integer",
+                              "example": 1
+                            }
+                          }
+                        }
+                      },
+                      "PostConditions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "example": "Power Button"
+                            },
+                            "result": {
+                              "type": "integer",
+                              "example": 1
+                            }
+                          }
+                        }
+                      },
+                      "supplied": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "example": "Battery"
+                            },
+                            "result": {
+                              "type": "string",
+                              "example": "1"
+                            }
+                          }
+                        }
+                      },
+                      "repairProdItems": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "19445611"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "New device mob updated"
+                            }
+                          }
+                        }
+                      },
+                      "Parts": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "example": 604
+                            },
+                            "product_id": {
+                              "type": "integer",
+                              "example": 55844369
+                            },
+                            "sku": {
+                              "type": "string",
+                              "example": "1055997"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "test inventory part updated"
+                            },
+                            "price": {
+                              "type": "number",
+                              "example": 225.0
+                            },
+                            "gst": {
+                              "type": "number",
+                              "example": 2.5
+                            },
+                            "quantity": {
+                              "type": "integer",
+                              "example": 100
+                            },
+                            "is_special": {
+                              "type": "integer",
+                              "example": 0
+                            },
+                            "warranty": {
+                              "type": "integer",
+                              "example": 10
+                            },
+                            "status": {
+                              "type": "string",
+                              "example": "Used (updated)"
+                            }
+                          }
+                        }
+                      },
+                      "pre_image_urls": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Public URLs of pre-condition images (http/https). Images will be fetched and uploaded automatically. Max 15 MB per image. Supported formats: JPEG, PNG, GIF.",
+                        "example": [
+                          "https://example.com/new-pre-image.jpg"
+                        ]
+                      },
+                      "post_image_urls": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Public URLs of post-condition images (http/https). Images will be fetched and uploaded automatically. Max 15 MB per image. Supported formats: JPEG, PNG, GIF.",
+                        "example": []
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "device"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "summary",
+                "devices"
+              ]
+            },
+            "example": {
+              "summary": {
+                "id": 2327,
+                "customer_id": 376,
+                "discount": 20.0,
+                "subtotal": 250.0,
+                "total_tax": 15.0,
+                "total": 145.0
+              },
+              "devices": [
+                {
+                  "id": 3932,
+                  "name": "Mobile Repair",
+                  "device": 1,
+                  "gst": 50.0,
+                  "price": 200.5,
+                  "status": "test updated",
+                  "due_on": 1735689600,
+                  "imei": "123456789012313",
+                  "repair_prod_id": "55852717",
+                  "additional_notes": "Handle with care - premium screen",
+                  "PreConditions": [
+                    {
+                      "name": "Power Button",
+                      "result": 1
+                    },
+                    {
+                      "name": "Volume Button",
+                      "result": 0
+                    },
+                    {
+                      "name": "Touch Functionality",
+                      "result": 1
+                    }
+                  ],
+                  "PostConditions": [
+                    {
+                      "name": "Power Button",
+                      "result": 1
+                    },
+                    {
+                      "name": "Volume Button",
+                      "result": 1
+                    },
+                    {
+                      "name": "Touch Functionality",
+                      "result": 1
+                    }
+                  ],
+                  "supplied": [
+                    {
+                      "name": "Battery",
+                      "result": "1"
+                    },
+                    {
+                      "name": "Charger",
+                      "result": "1"
+                    },
+                    {
+                      "name": "Sim Card",
+                      "result": "1"
+                    },
+                    {
+                      "name": "Memory Card",
+                      "result": "0"
+                    }
+                  ],
+                  "repairProdItems": [
+                    {
+                      "id": "19445611",
+                      "name": "New device mob updated"
+                    },
+                    {
+                      "id": "7702241",
+                      "name": "Mic Replacement updated"
+                    }
+                  ],
+                  "Parts": [
+                    {
+                      "id": 604,
+                      "product_id": 55844369,
+                      "sku": "1055997",
+                      "name": "test inventory part updated",
+                      "price": 225.0,
+                      "gst": 2.5,
+                      "quantity": 100,
+                      "is_special": 0,
+                      "warranty": 10,
+                      "status": "Used (updated)"
+                    }
+                  ],
+                  "pre_image_urls": [
+                    "https://example.com/new-pre-image.jpg"
+                  ],
+                  "post_image_urls": []
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/ticket/updateticketstatus",
+      "summary": "Update ticket line item status or repair timer",
+      "description": "Update the status of a ticket line item and/or control the repair timer (start, stop, or add custom time) for a specific repair/service on a ticket.\n\nAt least one of **status** or **timerAction** must be provided. Both may be sent in the same request.\n\n**Request Body Parameters:**\n\n- **id** (required): The unique identifier for the ticket. This corresponds to the **id** field inside the **summary** object returned by the **GET /tickets/{Ticket Id}** endpoint (i.e., `data.summary.id`).\n- **ticketInvId** (required): The unique identifier for the ticket line item (service) to be updated. This corresponds to the **id** field inside the **devices** array returned by the **GET /tickets/{Ticket Id}** endpoint (i.e., `data.devices[].id`).\n- **status** (optional): The new status to assign to the line item (e.g., \"In Progress\", \"Completed\", \"Pending\"). Required if **timerAction** is not provided.\n- **timerAction** (optional): Repair timer action. Allowed values: `start`, `stop`, `custom`. Required if **status** is not provided.\n  - `start` \u2014 starts the repair timer on the line item (sets `start_time` and `timer = 1` on `app_ticket_inv`).\n  - `stop` \u2014 stops the running repair timer, creates a time log entry in `app_ticket_inv_time_log`, and updates `timer_duration`.\n  - `custom` \u2014 adds a manual/custom time entry without starting a live timer. Requires at least one of **days**, **hours**, **minutes**, or **seconds** to be greater than 0.\n- **days** (optional): Days of custom time. Used only when **timerAction** is `custom`. Default: 0.\n- **hours** (optional): Hours of custom time. Used only when **timerAction** is `custom`. Default: 0.\n- **minutes** (optional): Minutes of custom time. Used only when **timerAction** is `custom`. Default: 0.\n- **seconds** (optional): Seconds of custom time. Used only when **timerAction** is `custom`. Default: 0.\n\n**Sample Payloads:**\n\nUpdate status only:\n```json\n{\n  \"id\": 3266,\n  \"ticketInvId\": 10231,\n  \"status\": \"In Progress\"\n}\n```\n\nStart repair timer:\n```json\n{\n  \"id\": 3266,\n  \"ticketInvId\": 10231,\n  \"timerAction\": \"start\"\n}\n```\n\nStop repair timer:\n```json\n{\n  \"id\": 3266,\n  \"ticketInvId\": 10231,\n  \"timerAction\": \"stop\"\n}\n```\n\nAdd custom/manual repair time:\n```json\n{\n  \"id\": 3266,\n  \"ticketInvId\": 10231,\n  \"timerAction\": \"custom\",\n  \"hours\": 1,\n  \"minutes\": 30\n}\n```\n\nUpdate status and start timer together:\n```json\n{\n  \"id\": 3266,\n  \"ticketInvId\": 10231,\n  \"status\": \"In Progress\",\n  \"timerAction\": \"start\"\n}\n```",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "id",
+                "ticketInvId"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "Ticket summary ID (data.summary.id from GET /tickets/{Ticket Id})",
+                  "example": 3266
+                },
+                "ticketInvId": {
+                  "type": "integer",
+                  "description": "Ticket line item / repair ID (data.devices[].id from GET /tickets/{Ticket Id})",
+                  "example": 10231
+                },
+                "status": {
+                  "type": "string",
+                  "description": "New status for the line item. Required if timerAction is not provided.",
+                  "example": "In Progress"
+                },
+                "timerAction": {
+                  "type": "string",
+                  "description": "Repair timer action: start, stop, or custom. Required if status is not provided.",
+                  "enum": [
+                    "start",
+                    "stop",
+                    "custom"
+                  ],
+                  "example": "start"
+                },
+                "days": {
+                  "type": "integer",
+                  "description": "Days of custom time. Used when timerAction is custom.",
+                  "example": 0
+                },
+                "hours": {
+                  "type": "integer",
+                  "description": "Hours of custom time. Used when timerAction is custom.",
+                  "example": 1
+                },
+                "minutes": {
+                  "type": "integer",
+                  "description": "Minutes of custom time. Used when timerAction is custom.",
+                  "example": 30
+                },
+                "seconds": {
+                  "type": "integer",
+                  "description": "Seconds of custom time. Used when timerAction is custom.",
+                  "example": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/tickets",
+      "summary": "List of tickets",
+      "description": "Returns a paginated list of tickets.\n\n- **default_order:** Use `default_order=1` to show newest tickets first (created date). `2` = ticket number, `0` = due date.\n- **from_date / to_date:** Unix timestamps filtering `created_date` by inclusive store calendar day (start of day through 23:59:59). Does not force UTC.\n- **is_transferred:** `summary.is_transferred` is `1` when the ticket was transferred into the current store; otherwise `0`.",
+      "parameters": [
+        {
+          "name": "keyword",
+          "in": "query",
+          "description": "it works on customer's {firstname}, {lastname}, {Email}, {phone/mobile}, {walk in customer} ,and then {Ticket Number} {DeviceName},{Service problem title}, {imei/serial}",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "page",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "default": 0
+          }
+        },
+        {
+          "name": "pagesize",
+          "in": "query",
+          "description": "Number of items per page, Max limit is 1000 records.",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "assigned_to",
+          "in": "query",
+          "description": "(employee-id) of user from the Employees API",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "created_by",
+          "in": "query",
+          "description": "(employee-id) of user from the Employees API",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "from_date",
+          "in": "query",
+          "description": "Unix timestamp. Inclusive start of created_date (store calendar day).",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "to_date",
+          "in": "query",
+          "description": "Unix timestamp. Inclusive end of created_date (store calendar day, through 23:59:59).",
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "default_order",
+          "in": "query",
+          "required": false,
+          "description": "Sort tickets by created date (1), ticket number (2), or due date (0). Use 1 for newest tickets first.",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "0",
+              "1",
+              "2"
+            ],
+            "example": "1"
+          }
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "POST",
+      "path": "/tickets",
+      "summary": "Create ticket",
+      "description": "Create Ticket Details.\n\n**Devices in the payload**: Correspond to **Ticket Line Items**.\n\n**Image URLs**: Use **pre_image_urls** and **post_image_urls** arrays in each device to automatically fetch and upload images from public URLs.\n\n **Request Body Parameters:**\n\n**Ticket Line Item**:\n - **device**:\n Represents the Model.\n - **status**: Represents the status of line item.\n - **due_on**: Represents the due date of line item in Unix timestamp format.\n   - **assigned_to**: Represents the employee id to whom the line item is assigned.\n - **PostPreCategory**: Corresponds to the repair category id.\n - **task_type**: Represents the task type ID (in integer), (for example: 0 = Repair, 1 = Claim Warranty).\n - **Parts**: Represent the parts attached to the ticket.\n - **repairProdItems**: Corresponds to the Services.\n - **pre_image_urls**: Optional. Array of public image URLs (http/https) for pre-condition images. Max 15 MB per image.\n - **post_image_urls**: Optional. Array of public image URLs (http/https) for post-condition images. Max 15 MB per image.\n\n **Custom Fields**: Represents Custom Repair Fields.\n\n **Summary**: Represents Ticket Summary details.(e.g. customer_id, employee_id)",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "imei": {
+                        "type": "string",
+                        "example": "114231112421231"
+                      },
+                      "public_comments": {
+                        "type": "string",
+                        "example": "Our team is working on it"
+                      },
+                      "public_comment_flag": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "PreConditions": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "example": []
+                      },
+                      "status": {
+                        "type": "string",
+                        "example": "In Progress"
+                      },
+                      "PostPreCategory": {
+                        "type": "string",
+                        "example": "34826"
+                      },
+                      "task_type": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "gst": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 14.894
+                      },
+                      "device": {
+                        "type": "string",
+                        "example": "845618"
+                      },
+                      "staff_comments": {
+                        "type": "string",
+                        "example": ""
+                      },
+                      "warranty": {
+                        "type": "string",
+                        "example": "5"
+                      },
+                      "lineItemId": {
+                        "type": "integer",
+                        "example": 0
+                      },
+                      "repairProdItems": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "7516047"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "Huawei Mate 9 Screen Replacement Blk"
+                            }
+                          }
+                        }
+                      },
+                      "line_discount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                      },
+                      "taxclass": {
+                        "type": "integer",
+                        "example": 28632
+                      },
+                      "device_location": {
+                        "type": "string",
+                        "example": ""
+                      },
+                      "warranty_timeframe": {
+                        "type": "string",
+                        "example": "3"
+                      },
+                      "Parts": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "product_id": {
+                              "type": "string",
+                              "example": "7516552"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "Huawei Mate 9 Screen Replacement Blk"
+                            },
+                            "price": {
+                              "type": "string",
+                              "example": "0.00"
+                            },
+                            "quantity": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "supplier": {
+                              "type": "string",
+                              "example": ""
+                            },
+                            "warranty_timeframe": {
+                              "type": "string",
+                              "example": ""
+                            },
+                            "warrenty": {
+                              "type": "string",
+                              "example": ""
+                            },
+                            "serials": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "string"
+                              },
+                              "example": {
+                                "0": ""
+                              }
+                            },
+                            "sku": {
+                              "type": "string",
+                              "example": ""
+                            }
+                          }
+                        }
+                      },
+                      "supplied": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "example": []
+                      },
+                      "security_code": {
+                        "type": "string",
+                        "example": ""
+                      },
+                      "network": {
+                        "type": "string",
+                        "example": ""
+                      },
+                      "serial": {
+                        "type": "string",
+                        "example": ""
+                      },
+                      "price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 184.105
+                      },
+                      "due_on": {
+                        "type": "integer",
+                        "example": 1588156799
+                      },
+                      "tax_inclusive": {
+                        "type": "string",
+                        "example": "1"
+                      },
+                      "assigned_to": {
+                        "type": "integer",
+                        "example": 10111
+                      },
+                      "repairCategId": {
+                        "type": "string",
+                        "example": "34826"
+                      },
+                      "images": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "example": []
+                      },
+                      "pre_image_urls": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Public URLs of pre-condition images (http/https). Images will be fetched and uploaded automatically. Max 15 MB per image. Supported formats: JPEG, PNG, GIF.",
+                        "example": [
+                          "https://example.com/images/pre-condition-1.jpg",
+                          "https://example.com/images/pre-condition-2.jpg"
+                        ]
+                      },
+                      "post_image_urls": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Public URLs of post-condition images (http/https). Images will be fetched and uploaded automatically. Max 15 MB per image. Supported formats: JPEG, PNG, GIF.",
+                        "example": [
+                          "https://example.com/images/post-condition-1.jpg"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "customFields": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "racknumber": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "example": "Rack Number"
+                          },
+                          "value": {
+                            "type": "string",
+                            "example": "311"
+                          }
+                        }
+                      },
+                      "shipmentnum": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "example": "Shipment Number"
+                          },
+                          "value": {
+                            "type": "string",
+                            "example": "12344211"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "summary": {
+                  "type": "object",
+                  "properties": {
+                    "signature": {
+                      "type": "string",
+                      "example": ""
+                    },
+                    "how_did_u_find_us": {
+                      "type": "string",
+                      "example": ""
+                    },
+                    "customer_id": {
+                      "type": "string",
+                      "example": "388"
+                    },
+                    "estimate_id": {
+                      "type": "string",
+                      "example": ""
+                    },
+                    "employee_id": {
+                      "type": "integer",
+                      "example": 10111
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/tickets/{Ticket-Id}",
+      "summary": "Get single ticket",
+      "description": "Returns a ticket owned by the current store or transferred into it. Transferred tickets that appear in GET /tickets are available here as well.",
+      "parameters": [
+        {
+          "name": "Ticket-Id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "POST",
+      "path": "/tickets/{Ticket-Id}/converttoinvoice",
+      "summary": "Convert ticket to invoice",
+      "description": "",
+      "parameters": [
+        {
+          "name": "Ticket-Id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/tradeins",
+      "summary": "GET data list of Tradein Items",
+      "description": "",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "keyword",
+          "description": "it works on {Item Name} and {SKU} that are in stock",
+          "schema": {
+            "type": "string",
+            "description": "Keyword to search by name or SKU"
+          },
+          "required": false
+        },
+        {
+          "name": "sold_included",
+          "in": "query",
+          "required": false,
+          "description": "Set the value to `1` to include items with **Sold** | **Moved to Inventory** | **Pending Refurb** statuses.",
+          "schema": {
+            "type": "integer",
+            "enum": [
+              1
+            ],
+            "default": 0
+          }
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "GET",
+      "path": "/v1/sms-inbox",
+      "summary": "List SMS inbox (Only Repairdesk SMS)",
+      "description": "Retrieve your SMS history (sent and received) with optional filters. Results are scoped to your account and can be filtered by date range, phone number, and direction.",
+      "parameters": [
+        {
+          "name": "from_date",
+          "in": "query",
+          "required": false,
+          "description": "Start of date range. Format: YYYY-MM-DD or Unix timestamp.",
+          "schema": {
+            "type": "string"
+          },
+          "example": "2025-03-01"
+        },
+        {
+          "name": "to_date",
+          "in": "query",
+          "required": false,
+          "description": "End of date range. Format: YYYY-MM-DD or Unix timestamp.",
+          "schema": {
+            "type": "string"
+          },
+          "example": "2025-03-13"
+        },
+        {
+          "name": "phone_number",
+          "in": "query",
+          "required": false,
+          "description": "Filter by phone (matches sender or recipient).",
+          "schema": {
+            "type": "string"
+          },
+          "example": "+1234567890"
+        },
+        {
+          "name": "direction",
+          "in": "query",
+          "required": false,
+          "description": "Filter by direction: inbound or outbound.",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "inbound",
+              "outbound"
+            ]
+          },
+          "example": "outbound"
+        },
+        {
+          "name": "page",
+          "in": "query",
+          "required": false,
+          "description": "Page number (default: 1).",
+          "schema": {
+            "type": "integer",
+            "default": 1
+          },
+          "example": 1
+        },
+        {
+          "name": "per_page",
+          "in": "query",
+          "required": false,
+          "description": "Items per page (default: 20, max: 100).",
+          "schema": {
+            "type": "integer",
+            "default": 20,
+            "maximum": 100
+          },
+          "example": 20
+        }
+      ],
+      "requestBody": null
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ticket/sendemail",
+      "summary": "Send email from a ticket",
+      "description": "Send an email to a customer, and attach it to a ticket. The email appears in the ticket's activity.",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "ticketId",
+                "subject",
+                "body"
+              ],
+              "properties": {
+                "ticketId": {
+                  "type": "integer",
+                  "description": "Ticket ID (must belong to your account)",
+                  "example": 12345
+                },
+                "subject": {
+                  "type": "string",
+                  "description": "Email subject. Required for custom emails.",
+                  "example": "Your repair order update"
+                },
+                "body": {
+                  "type": "string",
+                  "description": "Email body (HTML allowed). Required for custom emails.",
+                  "example": "<p>Hi, your device repair is in progress. We will notify you when it is ready.</p>"
+                },
+                "recipient": {
+                  "type": "string",
+                  "description": "Override recipient. Default: ticket customer's email.",
+                  "example": "customer@example.com"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ticket/sendsms",
+      "summary": "Send SMS from a ticket",
+      "description": "Send an SMS to a customer and attach it to a ticket. The message appears in the ticket's activity and in your SMS history.",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "ticketId",
+                "content",
+                "mobile"
+              ],
+              "properties": {
+                "ticketId": {
+                  "type": "integer",
+                  "description": "Ticket ID (must belong to your account)",
+                  "example": 12345
+                },
+                "content": {
+                  "type": "string",
+                  "description": "SMS message text",
+                  "example": "Hi, your repair is ready for pickup. Order #TKT-001."
+                },
+                "mobile": {
+                  "type": "string",
+                  "description": "Recipient phone number (e.g. +1234567890)",
+                  "example": "+1234567890"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ticket/uploadattachments",
+      "summary": "Upload ticket attachments",
+      "description": "Upload one or more files into a ticket's **Attachments** section. Intended for third-party / unattended integrations that cannot use the session-based attachment upload used by the app UI.\n\nUploaded files are stored securely and are not publicly accessible by direct link; staff view/download them from within the app. Attachments uploaded through this endpoint are always **internal** and are never shown on the customer portal.\n\n**Authentication:** Bearer token, OAuth, API key, or Basic auth.\n\n**OAuth module:** `tickets`  \n**OAuth capability:** `update`  \nOAuth tokens without ticket update permission receive a `403` response.\n\n**Request Body Parameters (multipart/form-data):**\n- **ticket_id**: Required*. The ticket ID. Also accepts `id` as an alias.\n- **file**: Required**. A single uploaded file.\n- **files[]**: Required**. One or more uploaded files. Also accepts `files`.\n- **notes**: Optional. Note text stored on each attachment.\n- **ticket_inv_id**: Optional. Ticket device/line item ID; must belong to the same ticket.\n\n\\* Provide either `ticket_id` or `id`.  \n\\*\\* Provide at least one file via `file` and/or `files` / `files[]`.\n\n`ticket_id` and `ticket_inv_id` are scoped to the authenticated tenant and current store.\n\n**Limits:**\n- Max file size: 15 MB per file\n- Max files per request: 10\n- Allowed extensions: gif, jpeg, jpg, png, xls, xlsx, xltx, doc, docx, pdf, pptx, ppt, txt, heic, heif\n- Not allowed: html, htm (excluded for XSS risk)\n- `heic` / `heif` are accepted as opaque uploads (no format conversion)",
+      "parameters": [],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "ticket_id",
+                "file"
+              ],
+              "properties": {
+                "ticket_id": {
+                  "type": "integer",
+                  "description": "The ticket ID. Also accepts 'id' as alias.",
+                  "example": 2222
+                },
+                "file": {
+                  "type": "string",
+                  "format": "binary",
+                  "description": "Single uploaded file. Also accepts 'files' / 'files[]' for multiple files."
+                },
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "description": "One or more uploaded files (files[]). Alternative to 'file'."
+                },
+                "notes": {
+                  "type": "string",
+                  "description": "Optional note stored on each attachment row.",
+                  "example": "Diagnostic reports from SCiR Tune-Up"
+                },
+                "ticket_inv_id": {
+                  "type": "integer",
+                  "description": "Optional ticket device / line item ID; must belong to the same ticket.",
+                  "example": 555
+                }
+              }
+            },
+            "encoding": {
+              "files": {
+                "contentType": "application/octet-stream"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

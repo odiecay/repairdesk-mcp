@@ -57,31 +57,101 @@ assistant works it out across tools instead of you cross-referencing two screens
 
 ## Tools reference
 
-| Tool | What it does |
+Version 2 exposes **40 tools**: the original seven convenience tools plus 33
+operations from RepairDesk’s published API. See [the complete endpoint map](docs/endpoints.md)
+for each tool, HTTP route, and authorization requirement.
+
+| Area | Capabilities |
 |---|---|
-| `repairdesk_tickets` | Search tickets by status/date/keyword/tech, or get one ticket's full detail (including per-device status) |
-| `repairdesk_tickets_write` | Create tickets, update status/device fields, add internal or diagnostic notes, assign a technician |
-| `repairdesk_customers` | Look up customers by name, phone, email, or ID |
-| `repairdesk_invoices` | Search invoices, get one invoice, or check its outstanding/due amount |
-| `repairdesk_inventory` | Search parts stock by keyword |
-| `repairdesk_employees` | List employees/technicians |
-| `repairdesk_shop_info` | Reference lookups: devices, categories, statuses, colors, networks, tax classes, payment methods, referral sources, repair/service types, locations, problems (by device), trade-ins, purchase orders |
+| Tickets | Search/read/create, notes, documented line updates, status changes, technician assignment with read-back verification |
+| Files | Internal ticket attachments, pre/post condition images; single or multiple server-local files |
+| Repair time | Start/stop repair timers and add manual time to a specific ticket line |
+| Messages | Ticket email and SMS, SMS inbox; sends require explicit user authorization |
+| Customers | Search/read/create/update |
+| Inventory | Search/create/update, reference information, trade-in create/update/conversion, transfers |
+| Invoices | Read/create, due amount, record a received payment, convert ticket to invoice |
+| Purchasing | Purchase orders and item-level details; no purchase-order creation endpoint is documented |
+| Appointments | List/create, available slots and booking reference data |
+| Reports | Payment transactions by payment date, payroll shifts/monthly reports, Phone Pro call logs |
+| Reference data | Parts, services by category, brands/models, employees and existing shop reference lookups |
 
-**Safety rail:** `repairdesk_tickets_write` requires `confirmed: true` before applying a status
-change, and warns when the target status is one RepairDesk auto-notifies the customer on
-(Repaired, Ready for Pickup, Completed, Waiting on Customer, Waiting For Quote, Cancelled). You
-don't need to do anything for this to work — just answer "yes" when your assistant relays the
-confirmation prompt.
+New tools expose the published request schemas: `path` contains URL identifiers,
+`query` contains filters, and `body` contains JSON/form fields. IDs in these tools
+are RepairDesk's internal numeric IDs, **not** the number printed after `T-`.
+Use `repairdesk_tickets` with `ticket_id: "T-12345"` to resolve a displayed ticket
+number, then use `summary.id` and the appropriate `devices[].id`.
 
-**Handy detail:** ticket lookups/writes accept either RepairDesk's order ID format (`T-15423`)
-or the internal numeric ticket ID — you never need to know which one you have, the server
-resolves it for you.
+Writes require `confirmed: true` after the user authorizes the concrete action.
+An explicit request to do that action already supplies authorization; clients
+should not ask the same question twice. Existing note addition remains ungated.
+Statuses can trigger automatic customer notifications. Creating invoices or
+recording payments is never a side effect of uploading a quote. The payment tool
+records a received payment; it is not a card-payment gateway.
 
-## What this is *not*
+### Upload example
 
-This covers the read side of RepairDesk plus core ticket workflow writes. It does **not** cover
-estimates, appointment creation, POS/sales transactions, inventory writes, payment recording,
-ticket image/attachment upload, or webhooks. PRs welcome if you need one of those.
+Set `REPAIRDESK_UPLOAD_ROOTS` to the directories whose files the server may upload.
+Use the platform path separator (`:` on Linux/macOS, `;` on Windows). Paths are on
+the machine **running the MCP server**, not necessarily the operator's desktop.
+Symlinks are resolved before checking allowed roots. Uploads are disabled when
+no roots are configured.
+
+```json
+{
+  "body": {"ticket_id": 12345, "ticket_inv_id": 67890, "notes": "Approved quote"},
+  "file_paths": ["/srv/quotes/Customer - T-12345/Quote.pdf"],
+  "confirmed": true
+}
+```
+
+Call `repairdesk_attachments` with that payload. RepairDesk permits up to 10 files,
+15 MB each, and excludes HTML. These attachments are **internal**: staff open them
+in RepairDesk; upload does not send them to the customer or publish to the portal.
+RepairDesk may save a condition image and still return an error. Inspect the
+ticket’s pre/post image list before retrying to avoid duplicates.
+For `repairdesk_condition_images`, use `body.ticket_inv_id`, `body.condition`
+(`pre` or `post`) and `file_paths` for JPG/PNG/GIF images.
+
+### Repair timer example
+
+```json
+{
+  "body": {"id": 12345, "ticketInvId": 67890, "timerAction": "custom", "minutes": 15},
+  "confirmed": true
+}
+```
+
+Call `repairdesk_ticket_status_timer`. Use `start` or `stop` instead of `custom`
+for a live timer. Status and timer target **one line**, never all ticket lines
+implicitly. The existing `repairdesk_tickets_write` accepts `ticket_line_id`
+and requires it when multiple lines exist; it now reads changes back before
+reporting them as verified. Use `repairdesk_ticket_update` for the full documented
+payload, including line prices/parts and pre/post condition fields. The API can
+create lines when unknown line IDs are supplied: inspect IDs before submitting.
+
+## Scope and compatibility
+
+The checked-in request definitions come from the official OpenAPI specification,
+reviewed 19 October 2026. All 58 documented business operations have a tool route;
+this is endpoint coverage, not a claim that every parameter has been live-tested.
+The original seven tools retain their focused inputs; the new tools use the
+published request schemas. There are no documented public estimate or webhook
+management operations in this snapshot.
+
+Authentication supports an API key **or an externally managed OAuth access token**.
+Set `REPAIRDESK_ACCESS_TOKEN` to use Bearer authentication; it takes precedence over
+the API key. This server does not run the OAuth consent flow, store refresh tokens,
+or expose token exchange/revocation as model tools. Manage token renewal outside
+the conversation. Restart clients to discover new tools after upgrading.
+
+Three paths in the published spec repeat `/v1` despite a base URL ending in `/v1`.
+The client normalizes these so uploads and messages use one `/v1` segment.
+GET requests retry a rate limit once. **Writes never retry automatically**: after
+a timeout or ambiguous result inspect the target record before trying again.
+
+The GitHub source is version 2.0.0. This change does not publish an npm release;
+`server.json` retains the previous 1.0.0 npm package reference until a separate
+registry release is prepared. Install this source checkout to use the new tools.
 
 ## Quick start
 
@@ -97,13 +167,13 @@ installs both `node` and `npm`. To check it worked, open a terminal and run:
 node --version
 ```
 
-You should see something like `v20.x.x` (anything 18 or higher is fine).
+You should see something like `v22.x.x` (Node 18 or higher is supported).
 
 ### 2. Get the code
 
 **If you have Git:**
 ```bash
-git clone https://github.com/codeyoc/repairdesk-mcp.git
+git clone https://github.com/odiecay/repairdesk-mcp.git
 cd repairdesk-mcp
 ```
 
@@ -257,8 +327,11 @@ handles this for you) — not a `.env` file, since most MCP clients don't read o
 | `REPAIRDESK_API_KEY` | Yes | — | Your RepairDesk API key |
 | `REPAIRDESK_BASE_URL` | No | `https://api.repairdesk.co/api/web/v1` | Override the API base URL |
 | `REPAIRDESK_USER_AGENT` | No | `RepairDesk-MCP/1.0` | User-Agent sent on every request. Set this to your own shop/tool name if you like — it just can't be empty (see [Troubleshooting](#troubleshooting)) |
-| `REPAIRDESK_MIN_INTERVAL_MS` | No | `600` | Minimum ms between outbound API calls — see rate limiting below |
+| `REPAIRDESK_MIN_INTERVAL_MS` | No | `1250` | Minimum ms between outbound API calls — see rate limiting below |
 | `REPAIRDESK_LOG_DIR` | No | `./logs` | Where `mcp_audit.log` is written |
+| `REPAIRDESK_ACCESS_TOKEN` | No | — | Externally managed OAuth Bearer token; takes precedence over API key |
+| `REPAIRDESK_UPLOAD_ROOTS` | No | Empty | Allowed server-side upload directories; empty disables uploads |
+| `REPAIRDESK_TIMEOUT_MS` | No | `60000` | Request and response-body timeout |
 | `REPAIRDESK_CONFIG` | No | `./config.json` | Path to a JSON config file, if you'd rather use one than env vars (see below) |
 
 **Alternative: config file instead of env vars.** If your setup makes env vars awkward, create a
@@ -274,19 +347,16 @@ handles this for you) — not a `.env` file, since most MCP clients don't read o
 It's re-read on every API call, so you can rotate the key without restarting the server.
 Environment variables take priority over this file when both are present.
 
-### Rate limiting — the 100/minute thing
+### Rate limiting
 
-RepairDesk's documented cap is **100 requests per minute per API key** (some plans allow up to
-120 — check your own plan if you're unsure). This server handles that for you automatically:
+RepairDesk's [API help page](https://help.repairdesk.co/portal/en/kb/articles/api)
+states 50 requests per minute. This server defaults to 1250ms between requests
+(about 48/minute). Each process has its own queue; other clients sharing the same
+key still contribute to the total. Increase the interval if necessary.
 
-- Every outbound call is queued through a single throttle that waits at least
-  `REPAIRDESK_MIN_INTERVAL_MS` (default 600ms ≈ 100/min) between requests — so asking for a big
-  batch of tickets won't itself trigger a rate-limit error.
-- If RepairDesk still returns a 429 (rate limited) — e.g. another tool is also hammering the same
-  key — the server automatically waits and retries once before giving up.
-- You don't need to configure anything for this to work. Only touch
-  `REPAIRDESK_MIN_INTERVAL_MS` if you're consistently seeing rate-limit errors (raise it) or you
-  know your plan allows a higher cap and want faster bulk lookups (lower it, carefully).
+GET requests retry a 429 once, with a bounded wait. Writes never automatically
+retry, including uploads, messages and payment recording. Inspect records after
+an uncertain result before repeating a write.
 
 ## Troubleshooting
 
@@ -302,7 +372,7 @@ RepairDesk's Cloudflare blocks requests with an empty or default-looking User-Ag
 
 **"RepairDesk API rate limit hit twice in a row (429)"**
 You're making requests faster than your key's limit even after the built-in retry. Raise
-`REPAIRDESK_MIN_INTERVAL_MS` (try `1000`) in your config.
+`REPAIRDESK_MIN_INTERVAL_MS` (try `2000`) in your config.
 
 **"Ticket T-XXXXX not found — could not resolve to internal ID"**
 Check the order ID is correct and exists in this RepairDesk store. If you have the internal
@@ -347,10 +417,21 @@ server too, via the manual config in [Manual setup](#manual-setup).
 Yes — register it multiple times under different names (e.g. `repairdesk-store1`,
 `repairdesk-store2`) in your MCP client, each with its own `REPAIRDESK_API_KEY`.
 
-**Will my AI assistant accidentally email/text my customers?**
-Only `repairdesk_tickets_write` can trigger that, and only via a status change — which always
-requires an explicit `confirmed: true` and is flagged in the tool description when the target
-status is one of RepairDesk's notifying statuses. It won't happen silently.
+**Can these tools email/text customers?**
+Yes: explicit ticket email/SMS tools are available, and status changes can trigger
+RepairDesk's own notifications. The tool requires `confirmed: true` for those
+writes. Only set it for the user-authorized ticket, recipient and action.
+
+## Testing
+
+Run `npm ci` then `npm test`. Tests cover MCP stdio discovery, request schemas,
+file boundaries, multipart construction, status/field read-back, authentication,
+rate limits, secret redaction and uncertain write outcomes. They use synthetic
+fixtures and mocked HTTP responses, not a live shop.
+
+Live verification should use an explicitly designated test ticket/customer with
+contact details controlled by the operator. Keep payment, invoice and inventory
+writes in a sandbox unless the operator specifically authorizes real records.
 
 ## Security
 
@@ -364,3 +445,20 @@ private report if your host supports it) rather than a public PR with exploit de
 
 MIT — see [LICENSE](LICENSE). Provided as-is, no warranty — you're responsible for how you use
 it against your own RepairDesk account.
+
+### Message personalization
+
+Direct SMS/email tools require fully rendered text. Read the ticket's customer
+and selected device line, compose the message, then send it. The tools reject
+unresolved `{placeholder}` tokens before making a request; they do not assume
+that the send endpoints expand RepairDesk template macros.
+
+Automatic notifications caused by status changes are generated inside
+RepairDesk using the store's configured templates. The public API does not
+expose template management or a documented notification-suppression option.
+The direct-message guard cannot intercept these automatic messages. If status
+messages contain literal macros, compare the same transition on a dedicated
+test ticket through the web interface before changing production templates.
+Use the exact macro spelling shown in that notification editor: documented
+macro sets differ between notification types. Do not replace automatic
+messages with additional direct messages without accounting for duplicates.
