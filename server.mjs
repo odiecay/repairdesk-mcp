@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { assertStatusWriteAllowed } from './lib/status-policy.mjs';
 /**
  * RepairDesk MCP Server
  *
@@ -58,7 +59,9 @@ function auditLog(tool, action, params) {
 
 // Notification rules are store-configured; any status change may notify.
 
+const statusMode = process.env.REPAIRDESK_STATUS_MODE || 'web';
 const request = createClient({ getConfig,
+  statusMode,
   interval: Number(process.env.REPAIRDESK_MIN_INTERVAL_MS || 1250),
   timeout: Number(process.env.REPAIRDESK_TIMEOUT_MS || 60000),
   userAgent: process.env.REPAIRDESK_USER_AGENT || "RepairDesk-MCP/2.0"
@@ -103,7 +106,7 @@ async function resolveTicketId(ticketId) {
 
 const server = new McpServer({
   name: "repairdesk",
-  version: "2.0.0",
+  version: "2.0.1",
   description: "RepairDesk API — tickets, customers, invoices, inventory, employees"
 });
 
@@ -152,7 +155,7 @@ server.tool(
 
 server.tool(
   "repairdesk_tickets_write",
-  "Create/update tickets, add notes, assign techs. Status changes may trigger store-configured customer SMS/email, including In Progress. Set confirmed=true only for user-authorized changes; prior explicit authorization is sufficient.",
+  "Create/update tickets, add notes, assign techs. By default, existing-ticket status changes must be performed in the RepairDesk website because API notifications can contain unresolved placeholders. confirmed=true does not override this. Status changes may trigger store-configured customer SMS/email, including In Progress. Set confirmed=true only for user-authorized changes; prior explicit authorization is sufficient.",
   {
     action: z.enum(["create", "update", "add_note", "assign"]),
     ticket_id: z.string().optional().describe("Ticket ID (for update/add_note/assign)"),
@@ -175,6 +178,10 @@ server.tool(
   async (params) => {
     const { action, confirmed } = params;
     auditLog("repairdesk_tickets_write", action, { ticket_id: params.ticket_id, status: params.status, confirmed, note_type: params.note_type });
+
+    if (["update", "assign"].includes(action) && params.status !== undefined) {
+      assertStatusWriteAllowed(statusMode, "POST", "/ticket/updateticketstatus", {status:params.status});
+    }
 
     if (params.ticket_id && action !== "create") {
       params.ticket_id = await resolveTicketId(params.ticket_id);

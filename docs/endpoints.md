@@ -43,3 +43,11 @@ Source: [official OpenAPI specification](https://api-docs.repairdesk.co/rd-unres
 The original tools cover ticket list/read/create/note; customer list/read; invoice list/read/due; inventory list; employees; and shop reference GET routes. Updates now use the documented ticket update/status routes. OAuth credential lifecycle operations are deliberately managed outside MCP; an externally managed Bearer token is supported.
 
 Uploads and messages normalize the spec's duplicated /v1 prefix against the configured base URL.
+
+## Status-write policy
+
+Endpoint coverage does not mean every mutation is enabled by default. In the
+default `web` status mode, existing-ticket status changes are blocked on all
+update routes, including status fields nested in general ticket updates. Timer
+requests without a status remain available. See README for the website handoff
+and server-side `REPAIRDESK_STATUS_MODE` configuration.

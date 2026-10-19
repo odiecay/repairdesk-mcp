@@ -17,5 +17,16 @@ test('stdio server exposes all tools and blocks unapproved messages without a ne
   assert.ok(email.inputSchema.properties.body.required.includes('ticketId'));
   const result=await client.callTool({name:email.name,arguments:{body:{ticketId:1,subject:'Test',body:'Test'}}});
   assert.equal(JSON.parse(result.content[0].text).confirmation_required,true);
+  for (const [name,args] of [
+    ['repairdesk_tickets_write',{action:'update',ticket_id:'T-123',status:'Repaired',confirmed:true}],
+    ['repairdesk_ticket_status_timer',{body:{id:1,ticketInvId:2,status:'In Progress',timerAction:'start'},confirmed:true}],
+    ['repairdesk_ticket_update',{body:{summary:{id:1},devices:[{id:2,name:'Repair',device:3,status:'Completed'}]},confirmed:true}]
+  ]) {
+    const blocked=await client.callTool({name,arguments:args});
+    assert.equal(blocked.isError,true);
+    assert.match(blocked.content[0].text,/RepairDesk website/);
+    assert.doesNotMatch(blocked.content[0].text,/request failed/);
+  }
+
  }finally{await client.close();}
 });

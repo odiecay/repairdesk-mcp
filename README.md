@@ -446,19 +446,40 @@ private report if your host supports it) rather than a public PR with exploit de
 MIT — see [LICENSE](LICENSE). Provided as-is, no warranty — you're responsible for how you use
 it against your own RepairDesk account.
 
-### Message personalization
+### Message personalization and status changes
+
+**Default: change existing ticket statuses in the RepairDesk website.** A
+controlled comparison on the same test ticket showed that the website rendered
+customer/device macros while the public status API sent literal placeholders.
+The exact upstream cause remains unresolved. Do not alter otherwise working
+store templates just to accommodate the API.
+
+`REPAIRDESK_STATUS_MODE=web` is the default. Status writes through the existing
+ticket tool, dedicated status/timer endpoint, and general ticket update endpoint
+are blocked before any API mutation. `confirmed=true` cannot bypass this policy.
+A combined status-and-timer request is rejected in full; timer-only requests
+remain available. Status filters, notes, assignments and status-free edits work
+normally. Ticket creation remains available and may trigger its own configured
+notifications; its notification rendering has not been verified by this test.
+
+When a status change is requested:
+1. Read the ticket and identify the correct repair line and desired status.
+2. Ask the operator to make that change through the normal RepairDesk website.
+3. Read the ticket back after they finish and verify the resulting status.
+4. Do not claim completion before readback, or send a duplicate direct message.
+
+This is an operator handoff, not browser automation. Existing MCP processes need
+a reconnect/restart to load this version. A server administrator can explicitly
+set `REPAIRDESK_STATUS_MODE=api` for controlled internal testing or after verifying
+an upstream fix; ordinary tool arguments cannot enable it. Invalid values stop
+the server rather than silently allowing status writes.
 
 Direct SMS/email tools require fully rendered text. Read the ticket's customer
 and selected device line, compose the message, then send it. The tools reject
 unresolved `{placeholder}` tokens before making a request; they do not assume
 that the send endpoints expand RepairDesk template macros.
 
-Automatic notifications caused by status changes are generated inside
-RepairDesk using the store's configured templates. The public API does not
-expose template management or a documented notification-suppression option.
-The direct-message guard cannot intercept these automatic messages. If status
-messages contain literal macros, compare the same transition on a dedicated
-test ticket through the web interface before changing production templates.
-Use the exact macro spelling shown in that notification editor: documented
-macro sets differ between notification types. Do not replace automatic
-messages with additional direct messages without accounting for duplicates.
+Automatic notifications are generated inside RepairDesk using store templates.
+The public API does not expose template management or a documented notification
+suppression option. The direct-message guard cannot intercept automatic messages
+and is not a fix for the upstream status-notification fault.

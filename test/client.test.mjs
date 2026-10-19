@@ -43,3 +43,28 @@ test('multipart does not set JSON content type or serialize file bytes',async()=
  const request=createClient({getConfig:config,interval:0,fetchImpl:async(u,o)=>{assert.equal(o.body,form);assert.equal(o.headers['Content-Type'],undefined);return ok({});}});
  await request('POST','/v1/ticket/uploadattachments',{form});
 });
+
+test('default status policy blocks every update route before network, including mixed timer requests',async()=>{
+ let calls=0;
+ const request=createClient({getConfig:config,interval:0,fetchImpl:async()=>{calls++;return ok({});}});
+ for(const [method,path,body] of [
+  ['POST','/ticket/updateticketstatus',{id:1,ticketInvId:2,status:'Repaired'}],
+  ['POST','/v1/ticket/updateticketstatus',{id:1,ticketInvId:2,status:'In Progress',timerAction:'start'}],
+  ['PUT','/ticket/updateticket',{summary:{id:1},devices:[{id:2,status:'Pending'}]}],
+  ['PUT','/tickets/1',{devices:[{status:'Completed'}]}],
+  ['PUT','/ticket/updateticket',{summary:{id:1,status:''}}]
+ ]) await assert.rejects(request(method,path,{body}),/RepairDesk website/);
+ assert.equal(calls,0);
+ await request('POST','/ticket/updateticketstatus',{body:{id:1,ticketInvId:2,timerAction:'start'}});
+ await request('PUT','/ticket/updateticket',{body:{summary:{id:1},devices:[{id:2,additional_notes:'Test'}]}});
+ await request('GET','/tickets',{params:{status:'Pending'}});
+ assert.equal(calls,3);
+});
+
+test('status API use requires explicit server configuration and invalid modes fail closed',async()=>{
+ assert.throws(()=>createClient({getConfig:config,statusMode:'typo'}),/STATUS_MODE/);
+ let calls=0;
+ const request=createClient({getConfig:config,interval:0,statusMode:'api',fetchImpl:async()=>{calls++;return ok({});}});
+ await request('POST','/ticket/updateticketstatus',{body:{id:1,ticketInvId:2,status:'In Progress'}});
+ assert.equal(calls,1);
+});
