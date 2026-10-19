@@ -44,10 +44,10 @@ The original tools cover ticket list/read/create/note; customer list/read; invoi
 
 Uploads and messages normalize the spec's duplicated /v1 prefix against the configured base URL.
 
-## Status-write policy
+## Status writes and validation
 
-Endpoint coverage does not mean every mutation is enabled by default. In the
-default `web` status mode, existing-ticket status changes are blocked on all
-update routes, including status fields nested in general ticket updates. Timer
-requests without a status remain available. See README for the website handoff
-and server-side `REPAIRDESK_STATUS_MODE` configuration.
+The default API mode performs status writes and verifies them by readback.
+New communication records are separately checked for unresolved placeholders;
+status success is not notification success. An optional administrator `web`
+mode can block these writes. See [validation results](validation.md) for live
+test coverage and confirmed API discrepancies.

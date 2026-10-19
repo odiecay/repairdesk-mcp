@@ -8,7 +8,7 @@ import {join} from 'node:path';
 
 test('stdio server exposes all tools and blocks unapproved messages without a network call',async()=>{
  const client=new Client({name:'test',version:'1'});
- const transport=new StdioClientTransport({command:process.execPath,args:['server.mjs'],env:{PATH:process.env.PATH,REPAIRDESK_API_KEY:'fake',REPAIRDESK_BASE_URL:'http://127.0.0.1:1',REPAIRDESK_LOG_DIR:mkdtempSync(join(tmpdir(),'rd-log-'))},stderr:'pipe'});
+ const transport=new StdioClientTransport({command:process.execPath,args:['server.mjs'],env:{PATH:process.env.PATH,REPAIRDESK_STATUS_MODE:'web',REPAIRDESK_API_KEY:'fake',REPAIRDESK_BASE_URL:'http://127.0.0.1:1',REPAIRDESK_LOG_DIR:mkdtempSync(join(tmpdir(),'rd-log-'))},stderr:'pipe'});
  try{
   await client.connect(transport);
   const {tools}=await client.listTools();

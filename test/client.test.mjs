@@ -44,9 +44,9 @@ test('multipart does not set JSON content type or serialize file bytes',async()=
  await request('POST','/v1/ticket/uploadattachments',{form});
 });
 
-test('default status policy blocks every update route before network, including mixed timer requests',async()=>{
+test('optional web status policy blocks every update route before network, including mixed timer requests',async()=>{
  let calls=0;
- const request=createClient({getConfig:config,interval:0,fetchImpl:async()=>{calls++;return ok({});}});
+ const request=createClient({getConfig:config,interval:0,statusMode:'web',fetchImpl:async()=>{calls++;return ok({});}});
  for(const [method,path,body] of [
   ['POST','/ticket/updateticketstatus',{id:1,ticketInvId:2,status:'Repaired'}],
   ['POST','/v1/ticket/updateticketstatus',{id:1,ticketInvId:2,status:'In Progress',timerAction:'start'}],
@@ -61,10 +61,10 @@ test('default status policy blocks every update route before network, including 
  assert.equal(calls,3);
 });
 
-test('status API use requires explicit server configuration and invalid modes fail closed',async()=>{
+test('status API is enabled by default and invalid modes fail closed',async()=>{
  assert.throws(()=>createClient({getConfig:config,statusMode:'typo'}),/STATUS_MODE/);
  let calls=0;
- const request=createClient({getConfig:config,interval:0,statusMode:'api',fetchImpl:async()=>{calls++;return ok({});}});
+ const request=createClient({getConfig:config,interval:0,fetchImpl:async()=>{calls++;return ok({});}});
  await request('POST','/ticket/updateticketstatus',{body:{id:1,ticketInvId:2,status:'In Progress'}});
  assert.equal(calls,1);
 });

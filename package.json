@@ -1,6 +1,6 @@
 {
   "name": "mcp-server-repairdesk",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "MCP server giving AI assistants access to the RepairDesk API \u2014 tickets, customers, invoices, inventory, employees, and shop reference data.",
   "main": "server.mjs",
   "type": "module",

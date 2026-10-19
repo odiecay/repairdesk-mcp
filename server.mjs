@@ -59,7 +59,7 @@ function auditLog(tool, action, params) {
 
 // Notification rules are store-configured; any status change may notify.
 
-const statusMode = process.env.REPAIRDESK_STATUS_MODE || 'web';
+const statusMode = process.env.REPAIRDESK_STATUS_MODE || 'api';
 const request = createClient({ getConfig,
   statusMode,
   interval: Number(process.env.REPAIRDESK_MIN_INTERVAL_MS || 1250),
@@ -106,7 +106,7 @@ async function resolveTicketId(ticketId) {
 
 const server = new McpServer({
   name: "repairdesk",
-  version: "2.0.1",
+  version: "2.0.2",
   description: "RepairDesk API — tickets, customers, invoices, inventory, employees"
 });
 
@@ -155,7 +155,7 @@ server.tool(
 
 server.tool(
   "repairdesk_tickets_write",
-  "Create/update tickets, add notes, assign techs. By default, existing-ticket status changes must be performed in the RepairDesk website because API notifications can contain unresolved placeholders. confirmed=true does not override this. Status changes may trigger store-configured customer SMS/email, including In Progress. Set confirmed=true only for user-authorized changes; prior explicit authorization is sufficient.",
+  "Create/update tickets, add notes, assign techs. Status writes stay in the MCP. Readback distinguishes saved status from automatic notification problems; do not retry a saved change or send a duplicate correction. Status changes may trigger store-configured customer SMS/email, including In Progress. Set confirmed=true only for user-authorized changes; prior explicit authorization is sufficient.",
   {
     action: z.enum(["create", "update", "add_note", "assign"]),
     ticket_id: z.string().optional().describe("Ticket ID (for update/add_note/assign)"),
@@ -403,7 +403,7 @@ server.tool(
 // ============================================================
 
 async function main() {
-  registerOperations(server, { request, auditLog,
+  registerOperations(server, { request, auditLog, statusMode,
   uploadRoots: (process.env.REPAIRDESK_UPLOAD_ROOTS || '').split(delimiter).filter(Boolean)
 });
 
