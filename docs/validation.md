@@ -64,10 +64,14 @@ or payroll totals have not been reconciled against the web application.
 
 ## Not live-tested
 
-Brand/model creation, trade-in creation/update/conversion, invoice creation, ticket
+Model creation, trade-in creation/update/conversion, invoice creation, ticket
 conversion to invoice, and payment recording need dedicated test records and
 planned cleanup. They are not all operations on a ticket; a test ticket alone
 cannot isolate their effects. No claim of complete live coverage is made.
+Legacy customer creation has only passed duplicate-rejection checks. Billable
+service lookup needs a valid labor category, and populated report/payroll totals
+still need comparison with the website. Specialised inventory limits are listed
+below.
 
 ## Questions for RepairDesk
 
@@ -90,6 +94,9 @@ cannot isolate their effects. No claim of complete live coverage is made.
    requested nonzero value remains zero in both API readback and the website?
 8. How should clients clear inventory Long Description? Sending `notes:""`
    retained the existing value in the write response and operator's UI check.
+9. Why did the test appointment reminder have blank greeting, appointment detail
+   and store phone fields when customer name and store phone were present in the
+   creation confirmation? The reminder template and exact cause remain unverified.
 
 Live evidence and credentials are deliberately excluded from this repository.
 
@@ -220,3 +227,24 @@ the short description. The operator confirmed both. In the same update,
 `notes:""` retained the previous Long Description in the write response and the
 website. This clearing behavior is unresolved. The MCP flags a contradicting
 write-response value while keeping independent notes verification separate.
+
+The installed 2.1.2 server then restored the test item's retail price, cost and
+short description through the same preservation/readback flow. Stock remained
+zero and the checked SKU, tax, device, category, condition and location remained
+intact. The existing Long Description was retained in the write response.
+
+## Brand creation
+
+`POST /createbrand` created a clearly labelled test brand with a supplied repair
+category ID. Independent appointment-inventory reference readback returned one
+matching brand. The operator confirmed it appeared in the website after being
+asked to check that category. Model creation has not yet been live-tested; brand
+creation does not establish that the model endpoint works.
+
+## Installation check
+
+A fresh MCP connection to the shared shop installation reports version 2.1.2 and
+40 registered tools. The installed server was also used for the final inventory
+restoration above. Existing long-running clients need to reconnect to discover
+the expanded tool list; replacing server files does not reload their processes.
+These checks establish this installation, not compatibility with every MCP client.
