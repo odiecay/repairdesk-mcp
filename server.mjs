@@ -36,6 +36,7 @@ import { fileURLToPath } from "url";
 // ============================================================
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const {version} = JSON.parse(readFileSync(join(__dirname, 'package.json'), 'utf8'));
 // Primary: environment variables (set these in your MCP client's config).
 // Fallback: a local config.json next to this file, for setups that prefer
 // a file over env vars. Never commit a filled-in config.json.
@@ -68,7 +69,7 @@ const request = createClient({ getConfig, rateLimiter,
   statusMode,
   interval: minInterval,
   timeout: Number(process.env.REPAIRDESK_TIMEOUT_MS || 60000),
-  userAgent: process.env.REPAIRDESK_USER_AGENT || "RepairDesk-MCP/2.0"
+  userAgent: process.env.REPAIRDESK_USER_AGENT || `RepairDesk-MCP/${version}`
 });
 
 const apiGet = (endpoint, params) => request("GET", endpoint, { params });
@@ -110,7 +111,7 @@ async function resolveTicketId(ticketId) {
 
 const server = new McpServer({
   name: "repairdesk",
-  version: "2.1.1",
+  version,
   description: "RepairDesk API — tickets, customers, invoices, inventory, employees"
 });
 
@@ -413,7 +414,7 @@ async function main() {
 
 const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("RepairDesk MCP Server v1.0.0 running");
+  console.error(`RepairDesk MCP Server v${version} running`);
 }
 
 main().catch(err => {

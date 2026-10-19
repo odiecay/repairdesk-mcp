@@ -1,18 +1,21 @@
 # API validation — 19 October 2026
 
-Version 2.1.1 exposes 40 tools: seven convenience tools and 33 additions.
+Version 2.1.2 exposes 40 tools: seven convenience tools and 33 additions.
 The endpoint inventory maps 58 documented non-OAuth operations. This is operation
 coverage, not a claim that every field, business workflow or store configuration
 has been tested. OAuth consent, renewal and revocation remain external.
 
 ## Automated checks
 
-32 passing Node tests cover authentication, credential redaction, URL handling,
+44 passing Node tests cover authentication, credential redaction, URL handling,
 request schemas, required fields, write authorization, multipart file boundaries,
 response identity, timers, positive payment validation, status-line ownership,
 readback, notification observation, duplicate-status avoidance, and stdio tool
 registration. New non-file operations are also exercised with synthetic requests.
 Synthetic requests do not establish live functionality.
+Inventory regression tests cover decimal/zero pricing, preservation of omitted
+fields, matching identifiers, partial verification and missing readback. API
+validation errors retain field details while redacting credentials.
 
 ## Live ticket checks
 
@@ -61,8 +64,7 @@ or payroll totals have not been reconciled against the web application.
 
 ## Not live-tested
 
-Brand/model creation, inventory
-creation/update, trade-in creation/update/conversion, invoice creation, ticket
+Brand/model creation, trade-in creation/update/conversion, invoice creation, ticket
 conversion to invoice, and payment recording need dedicated test records and
 planned cleanup. They are not all operations on a ticket; a test ticket alone
 cannot isolate their effects. No claim of complete live coverage is made.
@@ -81,6 +83,13 @@ cannot isolate their effects. No claim of complete live coverage is made.
 5. Should empty inventory-transfer and appointment-search results be
    `success:false`, or empty successful collections? What is the supported discovery route for billable
    category IDs?
+6. Why does inventory PUT clear omitted core fields, and why is `name` required
+   although the update schema only requires `id`? Can the schema describe these
+   replacement semantics and permit decimal `price`/`cost_price` values?
+7. Why does the documented `minimum_price` update return success while the
+   requested nonzero value remains zero in both API readback and the website?
+8. How should clients clear inventory Long Description? Sending `notes:""`
+   retained the existing value in the write response and operator's UI check.
 
 Live evidence and credentials are deliberately excluded from this repository.
 
@@ -151,11 +160,63 @@ Independent `GET /appointment` readback verified one new record, the original
 customer ID, device, unique test serial, start/end times and zero total. Customer
 detail readback confirmed the checked contact/address/consent fields unchanged.
 The operator confirmed the appointment's identity, description, time and zero
-price in the website. Confirmation email/SMS delivery has not been established;
-the HTML response alone is not evidence of delivery.
+price in the website. The operator later received an appointment reminder SMS
+with blank values for the greeting, appointment detail and store phone number,
+confirmed by the operator's screenshot. Customer name and store phone were
+present in the creation confirmation response. The exact macros/cause are unknown;
+the booking used a free-text issue rather than a predefined repair-service ID.
+That might explain the appointment-detail blank but does not explain the missing
+name and store phone. The SMS inbox endpoint
+returned no matching outbound messages. Reminder template inspection is pending;
+the rendered HTML response did not establish correct notification content.
 
 An empty keyword search returned `success:false` / `No Result Found` before
 creation. The test accounted for this explicit empty-result response; the MCP
 still reports the upstream rejection rather than silently translating all API
 errors to empty collections. No failed or uncertain appointment write was
 retried.
+
+## Inventory creation and update
+
+A clearly labelled non-serialized test item was created with zero stock/cost/
+price, an existing category, manufacturer and device, a unique SKU, short and
+long descriptions, condition and physical location. Independent inventory
+search verified the readable fields; the operator confirmed the item appeared.
+
+Live testing exposed and addressed three MCP issues:
+
+- The published schema types `price` and `cost_price` as integers. MCP validation
+  initially rejected cents before sending. Narrow input-schema overrides now
+  accept decimals; the upstream schema snapshot remains intact. A full update
+  saved a 19.95 tax-inclusive retail price and 7.50 cost; readback and the operator
+  confirmed both, with stock still zero. The raw `price` response is 18.14 plus
+  1.81 tax; preserving the stored retail price avoids applying tax twice.
+- A price-only PUT without `name` failed with `Data validation failed` and
+  `data:[{name:["Name cannot be blank."]}]`. The MCP now exposes validation
+  details. Independent readback showed no changes from these rejected attempts.
+- A name-plus-description/location PUT saved those fields but cleared omitted
+  SKU, price, stock and tax fields on the test item. The item was restored from
+  its captured state. Inventory updates now look up the exact ID through the
+  documented keyword search, merge requested changes into existing readable
+  fields, then perform one PUT and independent readback. Conflicting path/body
+  IDs are rejected; unmatched targets or missing preservation data stop before
+  writing. Readback differences are returned explicitly, without retrying.
+
+The revised MCP successfully changed description/location while preserving
+retail price, cost, zero stock, SKU, tax, manufacturer/device and condition.
+The operator confirmed these fields and the retained long description in the
+website. GET omits long description (`notes`), so submitting that field is
+marked separately as unverified until checked in the UI.
+
+The documented `minimum_price:"10.00"` was submitted in both full and preserved
+updates. The upstream response returned success, but GET remained at 0.00 and
+the operator confirmed zero in the website. The MCP now reports this mismatch;
+it does not claim the minimum price was saved. This upstream behavior remains
+unresolved. Serialized inventory, nonzero stock movements, alternate valuation
+methods, warranty changes and multi-store inventory have not been live-tested.
+
+Explicit zero retail/cost prices saved correctly, and `description:""` cleared
+the short description. The operator confirmed both. In the same update,
+`notes:""` retained the previous Long Description in the write response and the
+website. This clearing behavior is unresolved. The MCP flags a contradicting
+write-response value while keeping independent notes verification separate.

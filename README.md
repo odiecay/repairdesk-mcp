@@ -149,7 +149,7 @@ The client normalizes these so uploads and messages use one `/v1` segment.
 GET requests retry once only for short, explicit Retry-After intervals. **Writes never retry automatically**: after
 a timeout or ambiguous result inspect the target record before trying again.
 
-The GitHub source is version 2.1.1. This change does not publish an npm release;
+The GitHub source is version 2.1.2. This change does not publish an npm release;
 `server.json` retains the previous 1.0.0 npm package reference until a separate
 registry release is prepared. Install this source checkout to use the new tools.
 
@@ -510,6 +510,23 @@ These are MCP-supported substitutions, not a claim about RepairDesk's native
 macro set. The public API does not document template management or per-request
 suppression of automatic status notifications. Our rendering runs on direct
 messages and cannot intercept RepairDesk's separate automatic status messages.
+
+### Inventory updates
+
+`repairdesk_inventory_update` accepts changed fields in `body`, plus the matching
+item ID in `path.id` and `body.id`. Before writing it looks up the exact item ID
+and fills in existing readable values: the upstream PUT clears omitted core
+fields and requires the product name even for price changes. Decimal prices and
+costs are supported despite the published schema declaring them as integers.
+Prices are sent with the preserved tax-inclusive setting and stored retail price.
+
+Inspect `mismatches`, `unverified_fields` and `write_performed` in the result.
+Successful API acceptance does not prove every field saved. Live testing found
+`minimum_price` ignored; GET does not expose Long Description (`notes`). A
+contradicting write response is flagged, while independent verification of notes
+still requires the website. Do not automatically retry a completed or uncertain
+write. Full coverage of serialized, warranty, valuation and multi-store behavior
+has not been established by the basic test item.
 
 See [validation results](docs/validation.md) for what was tested live versus
 what was only checked with synthetic requests.

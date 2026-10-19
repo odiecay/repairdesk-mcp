@@ -43,6 +43,17 @@ test('multipart does not set JSON content type or serialize file bytes',async()=
  const request=createClient({getConfig:config,interval:0,fetchImpl:async(u,o)=>{assert.equal(o.body,form);assert.equal(o.headers['Content-Type'],undefined);return ok({});}});
  await request('POST','/v1/ticket/uploadattachments',{form});
 });
+test('validation errors include field details without exposing credentials or retrying writes',async()=>{
+ for(const data of [
+  {success:false,message:'Data validation failed',data:[{name:['Name cannot be blank.'],debug:['test-secret']}]},
+  {success:true,data:{success:false,message:'Data validation failed',errors:{name:['Name cannot be blank.'],debug:['test-secret']}}}
+ ]){
+  let calls=0;
+  const request=createClient({getConfig:config,interval:0,fetchImpl:async()=>{calls++;return new Response(JSON.stringify(data),{status:200});}});
+  await assert.rejects(request('PUT','/inventory/15',{body:{id:15}}),e=>e.message.includes('Name cannot be blank.')&&e.message.includes('[REDACTED]')&&!e.message.includes('test-secret')&&e.message.includes('inspect the record'));
+  assert.equal(calls,1);
+ }
+});
 
 test('optional web status policy blocks every update route before network, including mixed timer requests',async()=>{
  let calls=0;

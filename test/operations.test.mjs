@@ -43,6 +43,30 @@ test('read report preserves filters and does not require confirmed flag',async()
  let seen;await executeOperation(op('transaction_report'),{query:{from:1790812800,to:1792368000}},{request:async(...args)=>{seen=args;return [];}});
  assert.equal(seen[0],'GET');assert.equal(seen[2].params.from,1790812800);
 });
+test('inventory currency accepts cents and zero without relaxing quantities or identifiers',async()=>{
+ for(const name of ['inventory_create']){
+  const body={name:'Test item',price:19.95,cost_price:7.5,minimum_price:'10.00',in_stock:0,manufacturer:12};
+  const args={body,confirmed:true};
+  if(name==='inventory_update'){args.path={id:'15'};body.id=15;}
+  let calls=0;const deps={request:async(method,path,options)=>{calls++;assert.deepEqual(options.body,args.body);return {};}};
+  await executeOperation(op(name),args,deps);
+  await assert.rejects(executeOperation(op(name),{...args,body:{...body,in_stock:0.5}},deps));
+  await assert.rejects(executeOperation(op(name),{...args,body:{...body,manufacturer:12.5}},deps));
+  assert.equal(calls,1);
+  args.body={...body,price:0,cost_price:0};
+  await executeOperation(op(name),args,deps);assert.equal(calls,2);
+ }
+});
+test('inventory update rejects conflicting path/body IDs without sending a write',async()=>{
+ let calls=0;
+ await assert.rejects(executeOperation(op('inventory_update'),{path:{id:'15'},body:{id:16,name:'Test item',price:19.95},confirmed:true},{request:async()=>{calls++;}}),/must match/);
+ assert.equal(calls,0);
+});
+test('inventory updates reject an explicitly empty name before contacting RepairDesk',async()=>{
+ let calls=0;const deps={request:async()=>{calls++;}};
+ await assert.rejects(executeOperation(op('inventory_update'),{path:{id:'15'},body:{id:15,name:'',price:19.95},confirmed:true},deps));
+ assert.equal(calls,0);
+});
 test('ticket update uses documented endpoint and readback, leaves other lines alone',async()=>{
  let puts=[],gets=0;
  const selected={id:'2',name:'Diagnostics',device:{id:3},price:'90',gst:'9',additional_notes:''};
@@ -78,9 +102,10 @@ test('every new non-file operation builds its documented request with synthetic 
   if(o.requestBody)args.body=sample(o.requestBody.content['application/json']?.schema);
   if(o.path==='/ticket/updateticketstatus')args.body.timerAction='start';
   if(o.path==='/invoices/{Invoice-Id}/payments')args.body={amount:1,method:'Cash'};
+  if(o.name==='repairdesk_inventory_update'){args.path.id=String(args.body.id);args.body.name='Test item';}
   let called=0;
-  await executeOperation(o,args,{request:async(method,path)=>{called++;assert.equal(method,o.method);assert.ok(!path.includes('{'));return {};}});
-  assert.equal(called,1,o.name);
+  await executeOperation(o,args,{request:async(method,path)=>{called++;if(o.name==='repairdesk_inventory_update'&&method==='GET')return {inventoryListData:[{id:1,name:'Test item',category_name:'Accessories',in_stock:'0',cost_price:'0',original_price:'0',tax_inclusive:'0'}]};assert.equal(method,o.method);assert.ok(!path.includes('{'));return {};}});
+  assert.equal(called,o.name==='repairdesk_inventory_update'?3:1,o.name);
  }
 });
 
