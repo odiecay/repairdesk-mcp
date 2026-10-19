@@ -1,13 +1,13 @@
 # API validation — 19 October 2026
 
-Version 2.1.0 exposes 40 tools: seven convenience tools and 33 additions.
+Version 2.1.1 exposes 40 tools: seven convenience tools and 33 additions.
 The endpoint inventory maps 58 documented non-OAuth operations. This is operation
 coverage, not a claim that every field, business workflow or store configuration
 has been tested. OAuth consent, renewal and revocation remain external.
 
 ## Automated checks
 
-29 passing Node tests cover authentication, credential redaction, URL handling,
+32 passing Node tests cover authentication, credential redaction, URL handling,
 request schemas, required fields, write authorization, multipart file boundaries,
 response identity, timers, positive payment validation, status-line ownership,
 readback, notification observation, duplicate-status avoidance, and stdio tool
@@ -21,16 +21,16 @@ An operator-owned test ticket/contact was used with explicit authorization.
 | Function | Evidence / result |
 |---|---|
 | Ticket lookup | Display number resolves to internal ID; detail readback works |
-| Internal note | Created successfully |
-| Assignment and additional notes | Saved and independently read back |
+| Internal note | Created and read back; operator confirmed internal visibility and flag enabled |
+| Assignment and ticket fields | Assignment saved/read back. Serial and multiline notes with apostrophe, ampersand and Unicode saved exactly and operator confirmed UI; originals restored and read back, monetary fields/status/assignment unchanged, no new notifications |
 | Attachments | Normal one-page PDF saved to intended test ticket and operator confirmed readable in UI. TXT was accepted by API, but operator reports image-viewer behavior; successful TXT viewing is not established. |
 | Condition images | Normal post-photo succeeded and appears in readback; tiny pre-photo returned error but was nevertheless saved |
-| Timers | Retested through MCP: 3 → 63 seconds after adding one minute; start timer=1; stop timer=0 after three seconds; final GET confirms 66 seconds. Status and $99 total unchanged. |
+| Timers | Retested through MCP: 3 → 63 seconds after adding one minute; start timer=1; stop timer=0 after three seconds; final GET confirms 66 seconds. Operator confirmed UI total/stopped state. Status and $99 total unchanged. |
 | Dedicated status route | Status saved; automatic SMS contained literal macros |
 | General ticket-update status route | Same failure: status saved, automatic SMS contains literal macros |
 | Website comparison | Same ticket/status rendered name and device correctly; operator confirmed received text |
 | Direct SMS | MCP read live customer/manufacturer/device/category/ticket/status fields, rendered placeholders and sent one message. Full rendered content matches communication record; operator confirmed receipt with real name/details. |
-| Direct email | API success and communication record; inbox delivery not independently confirmed |
+| Direct email | Live ticket fields rendered by MCP; API/history recorded email; operator confirmed one inbox delivery with correct name/device/category/ticket/status and formatting |
 
 The condition-photo partial save means an error does not guarantee no mutation.
 Do not retry ambiguous writes automatically. Attachment reference URLs returned
@@ -89,5 +89,20 @@ Live evidence and credentials are deliberately excluded from this repository.
 The operator is checking endpoints one at a time. The normal PDF attachment
 passed actual UI opening. A normal-sized pre-condition PNG also passed API readback and operator-confirmed
 placement/opening in the pre-condition section. A two-image post-condition
-upload is the next case. Earlier API success must not be
+upload also passed: both images returned by readback, operator confirmed both
+open correctly, and a supplied screenshot shows both under Post Images. Earlier API success must not be
 read as proof that every format previews correctly in RepairDesk.
+
+## Rate-limit edge case
+
+A live email-preview ticket read returned HTTP 429 before any email was sent.
+Independent process queues were a coordination gap, now addressed by shared
+file-backed pacing and cooldowns. Tests cover three independent processes,
+cooldown persistence and a 429 without Retry-After. Other applications/hosts or
+older MCP processes remain outside this coordination, so 429s remain possible.
+The later email preview and one send succeeded; operator confirmed exactly one
+email with correct fields. No uncertain email send was retried.
+
+Direct-message edge cases were also exercised live: preview returned rendered
+text without sending; an unknown placeholder and an unrelated repair-line ID
+were rejected. Independent ticket readback showed no new communications.

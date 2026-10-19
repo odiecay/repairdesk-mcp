@@ -146,10 +146,10 @@ the conversation. Restart clients to discover new tools after upgrading.
 
 Three paths in the published spec repeat `/v1` despite a base URL ending in `/v1`.
 The client normalizes these so uploads and messages use one `/v1` segment.
-GET requests retry a rate limit once. **Writes never retry automatically**: after
+GET requests retry once only for short, explicit Retry-After intervals. **Writes never retry automatically**: after
 a timeout or ambiguous result inspect the target record before trying again.
 
-The GitHub source is version 2.0.0. This change does not publish an npm release;
+The GitHub source is version 2.1.1. This change does not publish an npm release;
 `server.json` retains the previous 1.0.0 npm package reference until a separate
 registry release is prepared. Install this source checkout to use the new tools.
 
@@ -351,12 +351,19 @@ Environment variables take priority over this file when both are present.
 
 RepairDesk's [API help page](https://help.repairdesk.co/portal/en/kb/articles/api)
 states 50 requests per minute. This server defaults to 1250ms between requests
-(about 48/minute). Each process has its own queue; other clients sharing the same
-key still contribute to the total. Increase the interval if necessary.
+(about 48/minute). Updated MCP processes sharing the same credential and state
+directory coordinate their request starts using a file lock. The default state
+directory is `~/.cache/repairdesk-mcp`; set `REPAIRDESK_STATE_DIR` to share it across
+installations. It stores timestamps under a hashed credential identifier, not
+credentials or customer data. Older processes, other apps and other machines
+can still consume the account's request allowance.
 
-GET requests retry a 429 once, with a bounded wait. Writes never automatically
-retry, including uploads, messages and payment recording. Inspect records after
-an uncertain result before repeating a write.
+A 429 establishes a shared cooldown. Missing Retry-After defaults to 60 seconds.
+GETs retry once only when the explicit cooldown is at most 30 seconds; longer
+cooldowns return an actionable retry-later error. Writes never automatically
+retry, including uploads, messages and payments. Shared pacing waits are bounded
+so a tool does not hang indefinitely. Inspect records after an uncertain result
+before repeating a write.
 
 ## Troubleshooting
 
@@ -370,9 +377,11 @@ change — most don't reload MCP config live.
 RepairDesk's Cloudflare blocks requests with an empty or default-looking User-Agent. Don't set
 `REPAIRDESK_USER_AGENT` to an empty string.
 
-**"RepairDesk API rate limit hit twice in a row (429)"**
-You're making requests faster than your key's limit even after the built-in retry. Raise
-`REPAIRDESK_MIN_INTERVAL_MS` (try `2000`) in your config.
+**HTTP 429 or shared request cooldown**
+Wait for the reported cooldown. Reconnect older MCP processes to enable shared
+pacing, and check for other integrations using the same account. If needed,
+raise `REPAIRDESK_MIN_INTERVAL_MS` (for example, `2000`). Do not repeatedly retry
+sends, payments or uploads. An API error may require inspecting the target first.
 
 **"Ticket T-XXXXX not found — could not resolve to internal ID"**
 Check the order ID is correct and exists in this RepairDesk store. If you have the internal

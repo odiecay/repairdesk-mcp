@@ -28,7 +28,7 @@ test('writes are never retried on rate limit or network ambiguity',async()=>{
  }
 });
 test('GET retries once and a failed request does not poison queue',async()=>{
- let calls=0;const request=createClient({getConfig:config,interval:0,sleep:async()=>{},fetchImpl:async()=>++calls===1?new Response('',{status:429}):ok({calls})});
+ let calls=0;const request=createClient({getConfig:config,interval:0,sleep:async()=>{},fetchImpl:async()=>++calls===1?new Response('',{status:429,headers:{'retry-after':'1'}}):ok({calls})});
  assert.deepEqual(await request('GET','/tickets'),{calls:2});
  assert.deepEqual(await request('GET','/tickets'),{calls:3});
 });

@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { homedir } from 'node:os';
+import { createSharedLimiter } from './lib/rate-limit.mjs';
 import { assertStatusWriteAllowed } from './lib/status-policy.mjs';
 /**
  * RepairDesk MCP Server
@@ -60,9 +62,11 @@ function auditLog(tool, action, params) {
 // Notification rules are store-configured; any status change may notify.
 
 const statusMode = process.env.REPAIRDESK_STATUS_MODE || 'api';
-const request = createClient({ getConfig,
+const minInterval = Number(process.env.REPAIRDESK_MIN_INTERVAL_MS || 1250);
+const rateLimiter = createSharedLimiter({getConfig,interval:minInterval,stateDir:process.env.REPAIRDESK_STATE_DIR || join(homedir(),'.cache','repairdesk-mcp')});
+const request = createClient({ getConfig, rateLimiter,
   statusMode,
-  interval: Number(process.env.REPAIRDESK_MIN_INTERVAL_MS || 1250),
+  interval: minInterval,
   timeout: Number(process.env.REPAIRDESK_TIMEOUT_MS || 60000),
   userAgent: process.env.REPAIRDESK_USER_AGENT || "RepairDesk-MCP/2.0"
 });
@@ -106,7 +110,7 @@ async function resolveTicketId(ticketId) {
 
 const server = new McpServer({
   name: "repairdesk",
-  version: "2.1.0",
+  version: "2.1.1",
   description: "RepairDesk API — tickets, customers, invoices, inventory, employees"
 });
 
