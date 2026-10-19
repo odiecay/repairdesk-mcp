@@ -476,11 +476,31 @@ MCP clients must reconnect to load a new server version. Ticket creation remains
 available and can trigger its own configured notifications; its rendering has
 not been verified by the existing-ticket comparison.
 
-Direct SMS/email tools require fully rendered text. Read the ticket's customer
-and selected device line, compose the message, then send it. The tools reject
-unresolved `{placeholder}` tokens before making a request. The public API does
-not document template management or per-request suppression of automatic status
-notifications. The direct-message guard cannot intercept automatic messages.
+Direct SMS/email tools can accept plain text or supported placeholders. The MCP
+fetches the ticket and substitutes actual values before sending through the
+normal RepairDesk messaging API. This works with any compatible MCP client;
+there is no dependency on a particular assistant, shop, or customer name.
+
+| Placeholder | Ticket field |
+|---|---|
+| `{customer_first_name}`, `{customer_last_name}` | Linked customer's first/last name |
+| `{customer_name}`, `{customer name}` | Linked customer's full name |
+| `{manufacturer_name}` | Selected repair line's manufacturer |
+| `{Device_Name}`, `{Device Name}`, `{device_name}` | Selected repair line's device name |
+| `{repair_category}` | Selected repair line's repair category |
+| `{Ticket_Id}`, `{ticket_id}` | Display ticket number |
+| `{Status}`, `{status}` | Selected repair line's current status |
+
+Use `preview=true` to inspect the rendered message without sending. For a ticket
+with multiple repair lines, supply top-level `ticket_line_id` when using device,
+category or status placeholders. Unknown tokens, unavailable values and invalid
+line selections stop the send. Record values inserted into HTML email bodies
+are escaped. Sending still requires `confirmed=true`; previewing does not.
+
+These are MCP-supported substitutions, not a claim about RepairDesk's native
+macro set. The public API does not document template management or per-request
+suppression of automatic status notifications. Our rendering runs on direct
+messages and cannot intercept RepairDesk's separate automatic status messages.
 
 See [validation results](docs/validation.md) for what was tested live versus
 what was only checked with synthetic requests.

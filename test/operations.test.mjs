@@ -7,18 +7,6 @@ import {operations,executeOperation,operationShape} from '../lib/operations.mjs'
 import {updateTicket} from '../lib/ticket-write.mjs';
 const op=name=>operations.find(o=>o.name===`repairdesk_${name}`);
 
-test('direct messages reject unresolved macros before contacting RepairDesk',async()=>{
- let calls=0;const deps={request:async()=>{calls++;return {success:true};}};
- for(const token of ['{customer_first_name}','{manufacturer_name}','{Device_Name}','{Device Name}']) {
-  await assert.rejects(executeOperation(op('ticket_sms'),{body:{ticketId:1,mobile:'+61000000000',content:`Hi ${token}`},confirmed:true},deps),/Unresolved placeholder/);
-  await assert.rejects(executeOperation(op('ticket_email'),{body:{ticketId:1,subject:token,body:'Hello'},confirmed:true},deps),/Unresolved placeholder/);
-  await assert.rejects(executeOperation(op('ticket_email'),{body:{ticketId:1,subject:'Update',body:token},confirmed:true},deps),/Unresolved placeholder/);
- }
- assert.equal(calls,0);
- await executeOperation(op('ticket_sms'),{body:{ticketId:1,mobile:'+61000000000',content:'Hi Alex, your laptop is ready.'},confirmed:true},deps);
- assert.equal(calls,1);
-});
-
 test('all 33 new operations have usable input shapes and unique names',()=>{
  assert.equal(operations.length,33);assert.equal(new Set(operations.map(o=>o.name)).size,33);
  for(const o of operations)assert.ok(operationShape(o));

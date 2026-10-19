@@ -106,7 +106,7 @@ async function resolveTicketId(ticketId) {
 
 const server = new McpServer({
   name: "repairdesk",
-  version: "2.0.2",
+  version: "2.1.0",
   description: "RepairDesk API — tickets, customers, invoices, inventory, employees"
 });
 
